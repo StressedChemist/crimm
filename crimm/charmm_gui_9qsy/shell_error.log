@@ -1,0 +1,451 @@
+array(4) {
+  ["PROA"]=>
+  array(4) {
+    ["segid"]=>
+    string(4) "PROA"
+    ["checked"]=>
+    bool(true)
+    ["first"]=>
+    string(2) "19"
+    ["last"]=>
+    string(3) "269"
+  }
+  ["PROB"]=>
+  array(4) {
+    ["segid"]=>
+    string(4) "PROB"
+    ["checked"]=>
+    bool(true)
+    ["first"]=>
+    string(2) "19"
+    ["last"]=>
+    string(3) "269"
+  }
+  ["PROC"]=>
+  array(4) {
+    ["segid"]=>
+    string(4) "PROC"
+    ["checked"]=>
+    bool(true)
+    ["first"]=>
+    string(2) "19"
+    ["last"]=>
+    string(3) "269"
+  }
+  ["PROD"]=>
+  array(4) {
+    ["segid"]=>
+    string(4) "PROD"
+    ["checked"]=>
+    bool(true)
+    ["first"]=>
+    string(2) "19"
+    ["last"]=>
+    string(3) "269"
+  }
+}
+chains: array(4) {
+  ["PROA"]=>
+  array(4) {
+    ["segid"]=>
+    string(4) "PROA"
+    ["checked"]=>
+    bool(true)
+    ["first"]=>
+    string(2) "19"
+    ["last"]=>
+    string(3) "269"
+  }
+  ["PROB"]=>
+  array(4) {
+    ["segid"]=>
+    string(4) "PROB"
+    ["checked"]=>
+    bool(true)
+    ["first"]=>
+    string(2) "19"
+    ["last"]=>
+    string(3) "269"
+  }
+  ["PROC"]=>
+  array(4) {
+    ["segid"]=>
+    string(4) "PROC"
+    ["checked"]=>
+    bool(true)
+    ["first"]=>
+    string(2) "19"
+    ["last"]=>
+    string(3) "269"
+  }
+  ["PROD"]=>
+  array(4) {
+    ["segid"]=>
+    string(4) "PROD"
+    ["checked"]=>
+    bool(true)
+    ["first"]=>
+    string(2) "19"
+    ["last"]=>
+    string(3) "269"
+  }
+}
+segid: string(4) "PROA"
+cha: array(4) {
+  ["segid"]=>
+  string(4) "PROA"
+  ["checked"]=>
+  bool(true)
+  ["first"]=>
+  string(2) "19"
+  ["last"]=>
+  string(3) "269"
+}
+segid: string(4) "PROB"
+cha: array(4) {
+  ["segid"]=>
+  string(4) "PROB"
+  ["checked"]=>
+  bool(true)
+  ["first"]=>
+  string(2) "19"
+  ["last"]=>
+  string(3) "269"
+}
+segid: string(4) "PROC"
+cha: array(4) {
+  ["segid"]=>
+  string(4) "PROC"
+  ["checked"]=>
+  bool(true)
+  ["first"]=>
+  string(2) "19"
+  ["last"]=>
+  string(3) "269"
+}
+segid: string(4) "PROD"
+cha: array(4) {
+  ["segid"]=>
+  string(4) "PROD"
+  ["checked"]=>
+  bool(true)
+  ["first"]=>
+  string(2) "19"
+  ["last"]=>
+  string(3) "269"
+}
+string(8) "rename: "
+array(0) {
+}
+string(11) "nterminus: "
+NULL
+string(11) "cterminus: "
+NULL
+string(7) "first: "
+string(2) "19"
+string(3) "TYR"
+string(12) "chain type: "
+string(3) "PRO"
+string(21) "engineered_residues!!"
+array(0) {
+}
+string(11) "nterminus: "
+NULL
+string(11) "cterminus: "
+NULL
+string(7) "first: "
+string(2) "19"
+string(3) "TYR"
+string(12) "chain type: "
+string(3) "PRO"
+string(21) "engineered_residues!!"
+array(0) {
+}
+string(11) "nterminus: "
+NULL
+string(11) "cterminus: "
+NULL
+string(7) "first: "
+string(2) "19"
+string(3) "TYR"
+string(12) "chain type: "
+string(3) "PRO"
+string(21) "engineered_residues!!"
+array(0) {
+}
+string(11) "nterminus: "
+NULL
+string(11) "cterminus: "
+NULL
+string(7) "first: "
+string(2) "19"
+string(3) "TYR"
+string(12) "chain type: "
+string(3) "PRO"
+string(21) "engineered_residues!!"
+array(0) {
+}
+string(12) "topologyIn: "
+bool(true)
+string(13) "heteroatoms: "
+bool(false)
+<!-- -->array(1) {
+  [0]=>
+  string(4) "popc"
+}
+string(5) "GCD: "
+int(1)
+string(5) "GCD: "
+int(1)
+float(313.2)
+float(313.2)
+string(11) "CHECK UP!!!"
+string(23) "lxytop: 13750.373173045"
+string(23) "lxybot: 13750.373173045"
+string(17) "lipareatop: 313.2"
+string(17) "lipareabot: 313.2"
+string(9) "orig!!!!!"
+string(9) "nliptop: "
+float(30.68027609529061)
+string(9) "nlipbot: "
+float(31.36072667000325)
+
+string(9) "nliptop: "
+float(30.68027609529061)
+string(9) "nlipbot: "
+float(31.36072667000325)
+array(6) {
+  ["popc"]=>
+  float(123)
+  ["dopc"]=>
+  float(0)
+  ["dspc"]=>
+  float(0)
+  ["dmpc"]=>
+  float(0)
+  ["dppc"]=>
+  float(0)
+  ["chl1"]=>
+  float(31)
+}
+array(6) {
+  ["popc"]=>
+  float(126)
+  ["dopc"]=>
+  float(0)
+  ["dspc"]=>
+  float(0)
+  ["dmpc"]=>
+  float(0)
+  ["dppc"]=>
+  float(0)
+  ["chl1"]=>
+  float(32)
+}
+float(154)
+float(158)
+float(9640.9)
+float(9885.8)
+string(5) "gap: "
+float(-31.78287999999884)
+string(8) "target: "
+string(5) "upper"
+string(11) "sortedArr: "
+array(6) {
+  ["chl1"]=>
+  float(0.3197239047093916)
+  ["popc"]=>
+  float(0.2788956188375664)
+  ["dopc"]=>
+  float(0)
+  ["dspc"]=>
+  float(0)
+  ["dmpc"]=>
+  float(0)
+  ["dppc"]=>
+  float(0)
+}
+string(11) "addedLipd: "
+int(0)
+string(11) "addedArea: "
+float(0)
+determineSystemSize...
+int(999)
+array(4) {
+  ["/Stack overflow/"]=>
+  string(149) "Stack overflow found. Your system is too big to be handled by CHARMM executable in CHARMM-GUI. Please, download inputs and run them on your machine.."
+  ["/MALLOC returned ZERO/"]=>
+  string(154) "Heap expansion was failed. Your system is too big to be handled by CHARMM executable in CHARMM-GUI. Please, download inputs and run them on your machine.."
+  ["/NPOS -> "-/"]=>
+  string(84) "Negative number of ion is found. Please go back and increase your ion concentration."
+  ["/NNEG -> "-/"]=>
+  string(84) "Negative number of ion is found. Please go back and increase your ion concentration."
+}
+simulatePacking...
+<!-- --><!-- -->int(999)
+array(6) {
+  ["/to prevent infinite-loop/"]=>
+  string(78) "Protein size is larger than the bilayer size. Please increase the system size."
+  ["/NLIP(TOP|BOT) -> "[0-]/"]=>
+  string(67) "The number of lipid is too small. Please increase your system size."
+  ["/Stack overflow/"]=>
+  string(149) "Stack overflow found. Your system is too big to be handled by CHARMM executable in CHARMM-GUI. Please, download inputs and run them on your machine.."
+  ["/MALLOC returned ZERO/"]=>
+  string(154) "Heap expansion was failed. Your system is too big to be handled by CHARMM executable in CHARMM-GUI. Please, download inputs and run them on your machine.."
+  ["/NPOS -> "-/"]=>
+  string(84) "Negative number of ion is found. Please go back and increase your ion concentration."
+  ["/NNEG -> "-/"]=>
+  string(84) "Negative number of ion is found. Please go back and increase your ion concentration."
+}
+generateLipConjStructure...
+NULL
+array(0) {
+}
+buildComponents...
+<!-- -->int(999)
+start checkCholesterol...<!-- -->start checkPenetration...generateWaterbox...
+int(999)
+generateIon...
+int(999)
+assemblyComponents...
+int(999)
+<!-- --><!-- --><!-- --><!-- --><!-- --><!-- --><!-- -->Warning: Found duplicated patch (TSHO17). Overwriting old one.
+Warning: Found duplicated patch (TSHO21). Overwriting old one.
+Warning: Found duplicated parameter (ICGE-ICG1-ICG1-HGR61, mult=2.0). Overwriting old one.
+Warning: Found duplicated residue (MGU1). Overwriting old one.
+Warning: Found duplicated residue (MGU2). Overwriting old one.
+Warning: Found duplicated residue (ETHA). Overwriting old one.
+Warning: Found duplicated residue (FETH). Overwriting old one.
+Warning: Found duplicated residue (DFET). Overwriting old one.
+Warning: Found duplicated residue (TFET). Overwriting old one.
+Warning: Found duplicated residue (TFE). Overwriting old one.
+Warning: Found duplicated residue (CO2). Overwriting old one.
+Warning: Found duplicated residue (THFI). Overwriting old one.
+Warning: Found duplicated residue (THMI). Overwriting old one.
+Warning: Found duplicated residue (THFA). Overwriting old one.
+Warning: Found duplicated residue (THAO). Overwriting old one.
+Warning: Found duplicated residue (RNUS). Overwriting old one.
+Warning: Found duplicated residue (NUCL). Overwriting old one.
+Warning: Found duplicated residue (PPH1). Overwriting old one.
+Warning: Found duplicated residue (BMPH). Overwriting old one.
+Warning: Found duplicated residue (BMPD). Overwriting old one.
+Warning: Found duplicated residue (BDFP). Overwriting old one.
+Warning: Found duplicated residue (BDFD). Overwriting old one.
+Warning: Found duplicated residue (EP_2). Overwriting old one.
+Warning: Found duplicated residue (IP_2). Overwriting old one.
+Warning: Found duplicated residue (BTE2). Overwriting old one.
+Warning: Found duplicated residue (13DB). Overwriting old one.
+Warning: Found duplicated residue (13DP). Overwriting old one.
+Warning: Found duplicated residue (DMB1). Overwriting old one.
+Warning: Found duplicated residue (DMP1). Overwriting old one.
+Warning: Found duplicated residue (DMP2). Overwriting old one.
+Warning: Found duplicated residue (CROT). Overwriting old one.
+Warning: Found duplicated residue (PACP). Overwriting old one.
+Warning: Found duplicated residue (MECH). Overwriting old one.
+Warning: Found duplicated residue (TMCH). Overwriting old one.
+Warning: Found duplicated residue (FRET). Overwriting old one.
+Warning: Found duplicated residue (RTOL). Overwriting old one.
+Warning: Found duplicated residue (RTAL). Overwriting old one.
+Warning: Found duplicated residue (RTAC). Overwriting old one.
+Warning: Found duplicated residue (PRAC). Overwriting old one.
+Warning: Found duplicated residue (PROL). Overwriting old one.
+Warning: Found duplicated residue (PRAL). Overwriting old one.
+Warning: Found duplicated residue (SCH1). Overwriting old one.
+Warning: Found duplicated residue (SCH2). Overwriting old one.
+Warning: Found duplicated residue (SCH3). Overwriting old one.
+Warning: Found duplicated residue (ACET). Overwriting old one.
+Warning: Found duplicated residue (PROA). Overwriting old one.
+Warning: Found duplicated residue (GUAN). Overwriting old one.
+Warning: Found duplicated residue (MGUA). Overwriting old one.
+Warning: Found duplicated residue (GLYN). Overwriting old one.
+Warning: Found duplicated residue (MAMM). Overwriting old one.
+Warning: Found duplicated residue (EAMM). Overwriting old one.
+Warning: Found duplicated residue (ACEH). Overwriting old one.
+Warning: Found duplicated residue (MEOH). Overwriting old one.
+Warning: Found duplicated residue (METO). Overwriting old one.
+Warning: Found duplicated residue (ETOH). Overwriting old one.
+Warning: Found duplicated residue (ETO). Overwriting old one.
+Warning: Found duplicated residue (PRO2). Overwriting old one.
+Warning: Found duplicated residue (FORM). Overwriting old one.
+Warning: Found duplicated residue (ACEM). Overwriting old one.
+Warning: Found duplicated residue (NMA). Overwriting old one.
+Warning: Found duplicated residue (MESH). Overwriting old one.
+Warning: Found duplicated residue (MES1). Overwriting old one.
+Warning: Found duplicated residue (ETSH). Overwriting old one.
+Warning: Found duplicated residue (ES1). Overwriting old one.
+Warning: Found duplicated residue (DMDS). Overwriting old one.
+Warning: Found duplicated residue (DEDS). Overwriting old one.
+Warning: Found duplicated residue (EMS). Overwriting old one.
+Warning: Found duplicated residue (IMIA). Overwriting old one.
+Warning: Found duplicated residue (MIMI). Overwriting old one.
+Warning: Found duplicated residue (EIMI). Overwriting old one.
+Warning: Found duplicated residue (IMIM). Overwriting old one.
+Warning: Found duplicated residue (EIMM). Overwriting old one.
+Warning: Found duplicated residue (BENZ). Overwriting old one.
+Warning: Found duplicated residue (EBEN). Overwriting old one.
+Warning: Found duplicated residue (PHEN). Overwriting old one.
+Warning: Found duplicated residue (EPHE). Overwriting old one.
+Warning: Found duplicated residue (PHEO). Overwriting old one.
+Warning: Found duplicated residue (INDO). Overwriting old one.
+Warning: Found duplicated residue (EIND). Overwriting old one.
+Warning: Found duplicated residue (PDIP). Overwriting old one.
+Warning: Found duplicated residue (ETHA). Overwriting old one.
+Warning: Found duplicated residue (PRPA). Overwriting old one.
+Warning: Found duplicated residue (IBUT). Overwriting old one.
+Warning: Found duplicated residue (OCOH). Overwriting old one.
+Warning: Found duplicated residue (CO3). Overwriting old one.
+Warning: Found duplicated residue (C3). Overwriting old one.
+Warning: Found duplicated residue (CGU). Overwriting old one.
+Warning: Found duplicated residue (CME). Overwriting old one.
+Warning: Found duplicated residue (HIC). Overwriting old one.
+Warning: Found duplicated residue (HICP). Overwriting old one.
+Warning: Found duplicated residue (CGUP). Overwriting old one.
+Warning: Found duplicated residue (NIC). Overwriting old one.
+Warning: Found duplicated residue (NICH). Overwriting old one.
+Warning: Found duplicated residue (PPI1). Overwriting old one.
+Warning: Found duplicated residue (PPI2). Overwriting old one.
+Warning: Found duplicated residue (AMP). Overwriting old one.
+Warning: Found duplicated residue (ADP). Overwriting old one.
+Warning: Found duplicated residue (ATP). Overwriting old one.
+Warning: Found duplicated residue (NAD). Overwriting old one.
+Warning: Found duplicated residue (NADH). Overwriting old one.
+Warning: Found duplicated residue (NADP). Overwriting old one.
+Warning: Found duplicated residue (NDPH). Overwriting old one.
+Warning: Found duplicated patch (5DP). Overwriting old one.
+Warning: Found duplicated residue (BUG). Overwriting old one.
+Warning: Found duplicated parameter (OG311-CG301-CG3C51-CG3C52, mult=3.0). Overwriting old one.
+Warning: Found duplicated parameter (OG311-CG301-CG3C51-CG3RC1, mult=3.0). Overwriting old one.
+Warning: Found duplicated parameter (OG311-CG301-CG3C51-HGA1, mult=3.0). Overwriting old one.
+Warning: Found duplicated parameter (OG311-CG301-CG3C51-CG3C52, mult=3.0). Overwriting old one.
+Warning: Found duplicated parameter (OG311-CG301-CG3C51-CG3RC1, mult=3.0). Overwriting old one.
+Warning: Found duplicated parameter (OG311-CG301-CG3C51-HGA1, mult=3.0). Overwriting old one.
+Warning: Found duplicated residue (PHEN). Overwriting old one.
+Warning: Found duplicated residue (AGLC). Overwriting old one.
+Warning: Found duplicated parameter (CEL1-CEL1-CTL1). Overwriting old one.
+Warning: Found duplicated residue (MAS). Overwriting old one.
+Warning: Found duplicated residue (ETAC). Overwriting old one.
+Warning: Found duplicated residue (MPRO). Overwriting old one.
+Warning: Found duplicated residue (MP_1). Overwriting old one.
+Warning: Found duplicated residue (MP_2). Overwriting old one.
+Warning: Found duplicated residue (MSO4). Overwriting old one.
+Warning: Found duplicated residue (BUTA). Overwriting old one.
+Warning: Found duplicated residue (PENT). Overwriting old one.
+Warning: Found duplicated residue (HEXA). Overwriting old one.
+Warning: Found duplicated residue (ETHE). Overwriting old one.
+Warning: Found duplicated residue (PRPE). Overwriting old one.
+Warning: Found duplicated residue (BTE1). Overwriting old one.
+Warning: Found duplicated residue (BTE2). Overwriting old one.
+Warning: Found duplicated residue (DIPE). Overwriting old one.
+Warning: Found duplicated residue (DIHE). Overwriting old one.
+Warning: Found duplicated residue (NC4). Overwriting old one.
+Warning: Found duplicated residue (NC5). Overwriting old one.
+Warning: Found duplicated residue (CHOL). Overwriting old one.
+Warning: Found duplicated residue (ACHO). Overwriting old one.
+Warning: Found duplicated residue (PC). Overwriting old one.
+Warning: Found duplicated residue (GPC). Overwriting old one.
+Warning: Found duplicated residue (TEA). Overwriting old one.
+Warning: Found duplicated residue (ETAM). Overwriting old one.
+Warning: Found duplicated residue (GLYC). Overwriting old one.
+Warning: Found duplicated residue (MBUT). Overwriting old one.
+Warning: Found duplicated parameter (CG2R61-CG2R61-CG2R61-OC301, mult=2.0). Overwriting old one.
+Warning: Found duplicated parameter (HGR61-CG2R61-CG2R61-OC301, mult=2.0). Overwriting old one.

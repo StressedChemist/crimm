@@ -1,0 +1,20 @@
+      Image Update                   12.29 Other:            0.00
+      xdistm setup                    0.16 Other:            0.00
+      xdistm Build list              56.44 Other:            0.00
+      NBONDS                         53.40 Other:            0.00
+   List time                     122.29 Other:            0.00
+      Nonbond force                  66.96 Other:            0.00
+         Bond energy                     0.55 Other:            0.00
+         Angle energy                    3.17 Other:            0.00
+         Dihedral energy                 4.28 Other:            0.00
+         Restraints energy               0.02 Other:            0.00
+      INTRNL energy                   8.37 Other:            0.34
+   Energy time                    86.40 Other:           11.07
+ Total time                    399.00 Other:          190.31
+
+                    NORMAL TERMINATION BY NORMAL STOP
+                    MOST SEVERE WARNING WAS AT LEVEL  1
+
+                    $$$$$ JOB ACCOUNTING INFORMATION $$$$$
+                     ELAPSED TIME:     6.65  MINUTES 
+                         CPU TIME:     6.65  MINUTES 

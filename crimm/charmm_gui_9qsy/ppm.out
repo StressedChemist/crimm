@@ -1,0 +1,82 @@
+/home/charmm-gui/data/www/8028885842/ppm_6a1d0d91976b4.pdb                      
+heteroatoms excluded
+atom not in library: OT1  A LEU   269
+atom not in library: OT2  A LEU   269
+atom not in library: OT1  B LEU   269
+atom not in library: OT2  B LEU   269
+atom not in library: OT1  C LEU   269
+atom not in library: OT2  C LEU   269
+atom not in library: OT1  D LEU   269
+atom not in library: OT2  D LEU   269
+Initial optimiz. in hydrocarbon slab with approximate energy functions:
+emin=  -182.2 slab thickn.=    31.0
+   28 possible transmembrane secondary structure segments
+   1 A   21   49  29
+   2 A   56   77  22
+   3 A   86   93   8
+   4 A   98  131  34
+   5 A  156  183  28
+   6 A  188  205  18
+   7 A  243  267  25
+   8 B   21   49  29
+   9 B   56   77  22
+  10 B   86   93   8
+  11 B   98  131  34
+  12 B  156  183  28
+  13 B  188  205  18
+  14 B  243  267  25
+  15 C   21   49  29
+  16 C   56   77  22
+  17 C   86   93   8
+  18 C   98  131  34
+  19 C  156  183  28
+  20 C  188  205  18
+  21 C  243  267  25
+  22 D   21   49  29
+  23 D   56   77  22
+  24 D   86   93   8
+  25 D   98  131  34
+  26 D  156  183  28
+  27 D  188  205  18
+  28 D  243  267  25
+Possible transmembrane protein, checking... 
+N interact. lipids:  60
+#/hom;A; 27;19-45,55-123,146-149,157-180,183-229,236,241-269
+#/hom;B; 27;19-45,55-123,146-149,157-180,183-229,236,241-269
+#/hom;C; 27;19-45,55-123,146-149,157-180,183-229,236,241-269
+#/hom;D; 27;19-45,55-123,146-149,157-180,183-229,236,241-269
+A  21  45    27.   -4.1
+A  56  77    23.    0.0
+A  86  93    36.    0.2
+A  98 123    43.  -15.4
+A 157 180    26.   -5.6
+A 188 205    24.    0.0
+A 243 267    44.  -13.4
+B  21  45    27.   -4.1
+B  56  77    23.    0.0
+B  86  93    36.    0.1
+B  98 123    43.  -15.4
+B 157 180    26.   -5.6
+B 188 205    24.    0.0
+B 243 267    44.  -13.4
+C  21  45    27.   -4.1
+C  56  77    23.    0.0
+C  86  93    36.    0.1
+C  98 123    43.  -15.4
+C 157 180    26.   -5.6
+C 188 205    24.    0.0
+C 243 267    44.  -13.4
+D  21  45    27.   -4.1
+D  56  77    23.    0.0
+D  86  93    36.    0.1
+D  98 123    43.  -15.4
+D 157 180    26.   -5.6
+D 188 205    24.    0.0
+D 243 267    44.  -13.3
+TMH contribution:  -153.3
+Subunit A     8.
+Subunit B     8.
+Subunit C     8.
+Subunit D     8.
+Tilt angle:    0.0
+/home/char emin=  -159.1 thickn= 32.6+- 1.2 tilt=     0.+-    0.
