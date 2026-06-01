@@ -173,22 +173,32 @@ class MembraneBuilder:
         return residue
 
     def _leaflet_grid(self, count: int, z: float):
-        """Return XY grid coordinates for one leaflet."""
+    """Return XY grid coordinates for one leaflet, avoiding protein XY footprint."""
 
-        x_len, y_len = self.spec.box_xy
-        n_side = int(np.ceil(np.sqrt(count)))
+    x_len, y_len = self.spec.box_xy
+    n_side = int(np.ceil(np.sqrt(count * 2)))
 
-        xs = np.linspace(-x_len / 2, x_len / 2, n_side, endpoint=False)
-        ys = np.linspace(-y_len / 2, y_len / 2, n_side, endpoint=False)
+    protein_xy = self._protein_xy_coords()
 
-        coords = []
-        for x in xs:
-            for y in ys:
-                coords.append(np.array([x, y, z], dtype=float))
-                if len(coords) == count:
-                    return coords
+    xs = np.linspace(-x_len / 2, x_len / 2, n_side, endpoint=False)
+    ys = np.linspace(-y_len / 2, y_len / 2, n_side, endpoint=False)
 
-        return coords
+    coords = []
+    for x in xs:
+        for y in ys:
+            point_xy = np.array([x, y], dtype=float)
+
+            if self._too_close_to_protein(point_xy, protein_xy):
+                continue
+
+            coords.append(np.array([x, y, z], dtype=float))
+            if len(coords) == count:
+                return coords
+
+    raise ValueError(
+        f"Could only place {len(coords)} of {count} membrane residues. "
+        "Increase box_xy or reduce protein_exclusion_radius."
+    )
 
     def _has_sterols(self):
         resnames = set(self.spec.upper_leaflet) | set(self.spec.lower_leaflet)
