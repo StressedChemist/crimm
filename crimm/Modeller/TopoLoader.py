@@ -104,6 +104,7 @@ chain_type_def_lookup = {
     "Polynucleotide": "nucleic",
     "Solvent": "water_ions",
     "Ion": "water_ions",
+    "Lipid": "lipid",
     "Polymer": "synthetic_polymer",
     "CoSolvent": "synthetic_polymer",
 }
