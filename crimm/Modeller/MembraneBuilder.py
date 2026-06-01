@@ -200,6 +200,30 @@ class MembraneBuilder:
         "Increase box_xy or reduce protein_exclusion_radius."
     )
 
+    def _protein_xy_coords(self):
+    """Return XY coordinates for non-membrane, non-solvent, non-ion atoms."""
+
+    coords = []
+    for chain in self.model:
+        if getattr(chain, "chain_type", None) in {"Lipid", "Sterol", "Solvent", "Ion"}:
+            continue
+        for atom in chain.get_atoms():
+            coords.append(atom.coord[:2])
+
+    if not coords:
+        return np.empty((0, 2))
+
+    return np.array(coords)
+
+    def _too_close_to_protein(self, point_xy, protein_xy):
+        """Check whether an XY membrane placement point overlaps protein footprint."""
+    
+        if len(protein_xy) == 0:
+            return False
+
+        distances = np.linalg.norm(protein_xy - point_xy, axis=1)
+        return np.any(distances < self.spec.protein_exclusion_radius)
+
     def _has_sterols(self):
         resnames = set(self.spec.upper_leaflet) | set(self.spec.lower_leaflet)
         return any(self._is_sterol(resname) for resname in resnames)
