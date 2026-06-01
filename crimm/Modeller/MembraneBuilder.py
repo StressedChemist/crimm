@@ -173,51 +173,51 @@ class MembraneBuilder:
         return residue
 
     def _leaflet_grid(self, count: int, z: float):
-    """Return XY grid coordinates for one leaflet, avoiding protein XY footprint."""
+        """Return XY grid coordinates for one leaflet, avoiding protein XY footprint."""
 
-    x_len, y_len = self.spec.box_xy
-    n_side = int(np.ceil(np.sqrt(count * 2)))
+        x_len, y_len = self.spec.box_xy
+        n_side = int(np.ceil(np.sqrt(count * 2)))
 
-    protein_xy = self._protein_xy_coords()
+        protein_xy = self._protein_xy_coords()
 
-    xs = np.linspace(-x_len / 2, x_len / 2, n_side, endpoint=False)
-    ys = np.linspace(-y_len / 2, y_len / 2, n_side, endpoint=False)
+        xs = np.linspace(-x_len / 2, x_len / 2, n_side, endpoint=False)
+        ys = np.linspace(-y_len / 2, y_len / 2, n_side, endpoint=False)
 
-    coords = []
-    for x in xs:
-        for y in ys:
-            point_xy = np.array([x, y], dtype=float)
+        coords = []
+        for x in xs:
+            for y in ys:
+                point_xy = np.array([x, y], dtype=float)
 
-            if self._too_close_to_protein(point_xy, protein_xy):
-                continue
+                if self._too_close_to_protein(point_xy, protein_xy):
+                    continue
 
-            coords.append(np.array([x, y, z], dtype=float))
-            if len(coords) == count:
-                return coords
+                coords.append(np.array([x, y, z], dtype=float))
+                if len(coords) == count:
+                    return coords
 
-    raise ValueError(
-        f"Could only place {len(coords)} of {count} membrane residues. "
-        "Increase box_xy or reduce protein_exclusion_radius."
-    )
+        raise ValueError(
+            f"Could only place {len(coords)} of {count} membrane residues. "
+            "Increase box_xy or reduce protein_exclusion_radius."
+        )
 
     def _protein_xy_coords(self):
-    """Return XY coordinates for non-membrane, non-solvent, non-ion atoms."""
+        """Return XY coordinates for non-membrane, non-solvent, non-ion atoms."""
 
-    coords = []
-    for chain in self.model:
-        if getattr(chain, "chain_type", None) in {"Lipid", "Sterol", "Solvent", "Ion"}:
-            continue
-        for atom in chain.get_atoms():
-            coords.append(atom.coord[:2])
+        coords = []
+        for chain in self.model:
+            if getattr(chain, "chain_type", None) in {"Lipid", "Sterol", "Solvent", "Ion"}:
+                continue
+            for atom in chain.get_atoms():
+                coords.append(atom.coord[:2])
 
-    if not coords:
-        return np.empty((0, 2))
+        if not coords:
+            return np.empty((0, 2))
 
-    return np.array(coords)
+        return np.array(coords)
 
     def _too_close_to_protein(self, point_xy, protein_xy):
         """Check whether an XY membrane placement point overlaps protein footprint."""
-    
+
         if len(protein_xy) == 0:
             return False
 
@@ -289,4 +289,6 @@ def build_membrane_system(model: Model, spec: MembraneSpec) -> MembraneBuildResu
 
     builder = MembraneBuilder(model, spec)
     return builder.build()
+
+
 
