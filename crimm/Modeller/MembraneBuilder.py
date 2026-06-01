@@ -1,12 +1,16 @@
 """Build protein-membrane systems using native crimm objects."""
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+
 import numpy as np
 
-from crimm.StructEntities.Chain import Lipid
-from crimm.StructEntities.Model import Model
-from crimm.Modeller.TopoLoader import TopologyGenerator
 from crimm.Modeller.Solvator import Solvator
+from crimm.Modeller.TopoLoader import TopologyGenerator
+from crimm.StructEntities.Chain import Lipid, Sterol
+from crimm.StructEntities.Model import Model
+
+
+STEROL_RESNAMES = frozenset({"CHL1"})
 
 
 @dataclass
@@ -15,13 +19,10 @@ class MembraneSpec:
 
     upper_leaflet: dict[str, int]
     lower_leaflet: dict[str, int]
-
     box_xy: tuple[float, float]
     box_z: float
-
     lipid_z: float = 20.0
     protein_exclusion_radius: float = 2.8
-
     water_solvcut: float = 2.8
     salt_concentration: float = 0.15
     cation: str = "POT"
@@ -34,6 +35,7 @@ class MembraneBuildResult:
 
     model: Model
     lipid_count: int
+    sterol_count: int
     water_count: int | None = None
     ion_count: int | None = None
 
@@ -57,43 +59,52 @@ class MembraneBuilder:
         return MembraneBuildResult(
             model=self.model,
             lipid_count=self.count_lipids(),
+            sterol_count=self.count_sterols(),
             water_count=self.count_waters(),
             ion_count=self.count_ions(),
         )
 
     def prepare_topology(self):
-        """Load protein, lipid, water, and ion topology definitions."""
+        """Load lipid, sterol, water, and ion topology definitions."""
 
-        # Later this should load protein topology if needed.
-        # For first version, assume the input protein model already has topology.
         self.topology.load_residue_definitions("Lipid")
+        if self._has_sterols():
+            self.topology.load_residue_definitions("Sterol")
         self.topology.load_residue_definitions("Solvent")
 
     def add_lipid_bilayer(self):
-        """Create upper and lower leaflet lipid residues."""
+        """Create upper and lower leaflet lipid and sterol residues."""
 
         lipid_chain = Lipid("MEMB")
-        lipid_chain.pdbx_description = "generated membrane"
+        lipid_chain.pdbx_description = "generated membrane phospholipids"
 
-        resseq = 1
+        sterol_chain = Sterol("CHOL")
+        sterol_chain.pdbx_description = "generated membrane sterols"
+
+        residue_numbers = {"Lipid": 1, "Sterol": 1}
 
         for resname, count in self.spec.upper_leaflet.items():
             coords = self._leaflet_grid(count, z=self.spec.lipid_z)
             for coord in coords:
-                residue = self._create_lipid_residue(resname, resseq, coord)
-                lipid_chain.add(residue)
-                resseq += 1
+                self._add_membrane_residue(
+                    resname, coord, lipid_chain, sterol_chain, residue_numbers
+                )
 
         for resname, count in self.spec.lower_leaflet.items():
             coords = self._leaflet_grid(count, z=-self.spec.lipid_z)
             for coord in coords:
-                residue = self._create_lipid_residue(resname, resseq, coord)
+                residue = self._add_membrane_residue(
+                    resname, coord, lipid_chain, sterol_chain, residue_numbers
+                )
                 self._flip_lipid_z(residue)
-                lipid_chain.add(residue)
-                resseq += 1
 
-        self.model.add(lipid_chain)
-        self.topology.generate(lipid_chain)
+        if len(lipid_chain) > 0:
+            self.model.add(lipid_chain)
+            self.topology.generate(lipid_chain)
+
+        if len(sterol_chain) > 0:
+            self.model.add(sterol_chain)
+            self.topology.generate(sterol_chain)
 
     def solvate(self):
         """Add water around the protein-membrane system."""
@@ -120,14 +131,43 @@ class MembraneBuilder:
             anion=self.spec.anion,
         )
 
-    def _create_lipid_residue(self, resname: str, resseq: int, center):
-        """Create one lipid residue and translate it to a target center."""
+    def _add_membrane_residue(
+        self,
+        resname: str,
+        center: np.ndarray,
+        lipid_chain: Lipid,
+        sterol_chain: Sterol,
+        residue_numbers: dict[str, int],
+    ):
+        chain_type = self._chain_type_for_resname(resname)
+        chain = sterol_chain if chain_type == "Sterol" else lipid_chain
+        segid = "CHOL" if chain_type == "Sterol" else "MEMB"
+        resseq = residue_numbers[chain_type]
 
-        lipid_defs, _ = self.topology.load_residue_definitions("Lipid")
-        residue = lipid_defs[resname].create_residue(resseq=resseq, segid="MEMB")
+        residue = self._create_residue(resname, chain_type, resseq, segid, center)
+        chain.add(residue)
+        residue_numbers[chain_type] += 1
+        return residue
 
+    def _create_residue(
+        self,
+        resname: str,
+        chain_type: str,
+        resseq: int,
+        segid: str,
+        center: np.ndarray,
+    ):
+        """Create one membrane residue and translate it to a target center."""
+
+        residue_defs, _ = self.topology.load_residue_definitions(chain_type)
+        if resname not in residue_defs:
+            raise ValueError(
+                f"Residue {resname} is not available in {chain_type} topology."
+            )
+
+        residue = residue_defs[resname].create_residue(resseq=resseq, segid=segid)
         if residue is None:
-            raise ValueError(f"Could not create lipid residue {resname}")
+            raise ValueError(f"Could not create membrane residue {resname}")
 
         self._translate_residue_to_center(residue, center)
         return residue
@@ -149,6 +189,18 @@ class MembraneBuilder:
                     return coords
 
         return coords
+
+    def _has_sterols(self):
+        resnames = set(self.spec.upper_leaflet) | set(self.spec.lower_leaflet)
+        return any(self._is_sterol(resname) for resname in resnames)
+
+    @staticmethod
+    def _chain_type_for_resname(resname: str):
+        return "Sterol" if MembraneBuilder._is_sterol(resname) else "Lipid"
+
+    @staticmethod
+    def _is_sterol(resname: str):
+        return resname.upper() in STEROL_RESNAMES
 
     @staticmethod
     def _translate_residue_to_center(residue, target_center):
@@ -176,6 +228,13 @@ class MembraneBuilder:
             if getattr(chain, "chain_type", None) == "Lipid"
         )
 
+    def count_sterols(self):
+        return sum(
+            len(chain)
+            for chain in self.model
+            if getattr(chain, "chain_type", None) == "Sterol"
+        )
+
     def count_waters(self):
         return sum(
             len(chain)
@@ -196,3 +255,4 @@ def build_membrane_system(model: Model, spec: MembraneSpec) -> MembraneBuildResu
 
     builder = MembraneBuilder(model, spec)
     return builder.build()
+
