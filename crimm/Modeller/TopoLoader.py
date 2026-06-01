@@ -105,6 +105,7 @@ chain_type_def_lookup = {
     "Solvent": "water_ions",
     "Ion": "water_ions",
     "Lipid": "lipid",
+    "Sterol": "lipid_cholesterol",
     "Polymer": "synthetic_polymer",
     "CoSolvent": "synthetic_polymer",
 }
