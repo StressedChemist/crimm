@@ -9,7 +9,7 @@ from Bio.PDB.PDBExceptions import PDBConstructionException
 from crimm.StructEntities.Residue import DisorderedResidue
 
 class BaseChain(_Chain):
-    """Base class derived from and Biopython chain object and compatible with
+    """Base class derived from and Biopython chain object and compatible withclass Oligosaccharid
     Biopython's functions"""
     chain_type = "Base Chain"
     _res_repr_str = "Residues"
@@ -488,6 +488,14 @@ class Macrolide(BaseChain):
     
 class Oligosaccharide(BaseChain):
     chain_type = 'Oligosaccharide'
+
+class Lipid(BaseChain):
+    chain_type = 'Lipid'
+    _res_repr_str = "Lipids"
+
+class Sterol(BaseChain):
+    chain_type = 'Sterol'
+    _res_repr_str = "Sterols"
 
 class Solvent(BaseChain):
     chain_type = 'Solvent'
