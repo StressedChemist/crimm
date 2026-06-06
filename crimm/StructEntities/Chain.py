@@ -9,7 +9,7 @@ from Bio.PDB.PDBExceptions import PDBConstructionException
 from crimm.StructEntities.Residue import DisorderedResidue
 
 class BaseChain(_Chain):
-    """Base class derived from and Biopython chain object and compatible withclass Oligosaccharid
+    """Base class derived from and Biopython chain object and compatible with
     Biopython's functions"""
     chain_type = "Base Chain"
     _res_repr_str = "Residues"
