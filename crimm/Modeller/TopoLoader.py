@@ -795,17 +795,27 @@ class ParameterLoader:
             self.load_type(entity_type=entity_type)
 
     def load_type(self, entity_type: str):
-        """Load parameters from a CHARMM prm file."""
+        """Load parameters from CHARMM prm file(s)."""
         entity_type = entity_type.lower()
         if entity_type not in prm_path_dict:
             raise ValueError(f"No parameter file for {entity_type}")
-        filename = prm_path_dict[entity_type]
-        with open(filename, "r", encoding="utf-8") as f:
-            self._raw_data_strings = [
-                line.rstrip()
-                for line in f.readlines()  # if not skip_line(line)
-            ]
-            param_line_dict = categorize_lines(self._raw_data_strings)
+    
+        if entity_type in {"lipid", "lipid_cholesterol"}:
+            source_types = ("lipid", "cgenff", "carb", "lipid_cholesterol")
+        else:
+            source_types = (entity_type,)
+    
+        self._raw_data_strings = []
+    
+        for source_type in source_types:
+            filename = prm_path_dict[source_type]
+            with open(filename, "r", encoding="utf-8") as f:
+                self._raw_data_strings.extend(
+                    line.rstrip()
+                    for line in f.readlines()
+                )
+    
+        param_line_dict = categorize_lines(self._raw_data_strings)
         self.param_dict.update(parse_line_dict(param_line_dict))
 
     def __repr__(self):
@@ -996,7 +1006,6 @@ class ParameterLoader:
         for residue_definition in topology_loader.patched_defs.values():
             self.res_def_fill_ic(residue_definition, preserve)
 
-
 class ResidueTopologySet:
     """Class for loading topology definition to the residue and find any missing atoms.
     Any HIS will be renamed as HSD for protein."""
@@ -1013,11 +1022,33 @@ class ResidueTopologySet:
         if rtf_parser is not None:
             self.load_data_dict(rtf_parser.topo_dict, rtf_parser.rtf_version)
             return
+
         if self.entity_type not in rtf_path_dict:
             raise ValueError(f"Unknown entity type: {entity_type}")
+
         self.is_hetero = self.entity_type not in ("protein", "nucleic")
 
-        rtf = RTFParser(file_path=rtf_path_dict[self.entity_type])
+        if self.entity_type == "lipid_cholesterol":
+            mass_sources = ("lipid", "cgenff", "carb")
+            mass_lines = []
+
+            for source in mass_sources:
+                with open(rtf_path_dict[source], "r", encoding="utf-8") as f:
+                    mass_lines.extend(
+                        line
+                        for line in f
+                        if line.strip().upper().startswith("MASS")
+                    )
+
+            with open(rtf_path_dict[self.entity_type], "r", encoding="utf-8") as f:
+                cholesterol_text = f.read()
+
+            rtf = RTFParser(
+                rtf_block="31 1\n" + "".join(mass_lines) + cholesterol_text
+            )
+        else:
+            rtf = RTFParser(file_path=rtf_path_dict[self.entity_type])
+
         self._raw_data_strings = rtf.lines
         self.load_data_dict(rtf.topo_dict, rtf.rtf_version)
 
@@ -1026,26 +1057,26 @@ class ResidueTopologySet:
         from a RTF file."""
         self.rtf_version = rtf_version
         for resname, res_topo_dict in topo_data_dict.items():
-            # if resname in ResidueDefinition.na_3to1:
-            #     # Map 3-letter residue name to 1-letter residue name for nucleic
-            #     # acids, since biopython uses 1-letter residue name for them.
-            #     resname = ResidueDefinition.na_3to1[resname]
-
             if res_topo_dict["is_patch"]:
                 res_def = PatchDefinition(
-                    self.rtf_version, resname, res_topo_dict, is_hetero=self.is_hetero
+                    self.rtf_version,
+                    resname,
+                    res_topo_dict,
+                    is_hetero=self.is_hetero,
                 )
                 self.patches.append(res_def)
             else:
                 res_def = ResidueDefinition(
-                    self.rtf_version, resname, res_topo_dict, is_hetero=self.is_hetero
+                    self.rtf_version,
+                    resname,
+                    res_topo_dict,
+                    is_hetero=self.is_hetero,
                 )
                 self.residues.append(res_def)
 
             self.res_defs[resname] = res_def
 
         if "HIS" not in self.res_defs and "HSD" in self.res_defs:
-            # Map all histidines HIS to HSD
             self.res_defs["HIS"] = self.res_defs["HSD"]
 
     def __repr__(self):
@@ -1055,18 +1086,16 @@ class ResidueTopologySet:
             f"{len(self.patches)} PATCH definitions>"
         )
 
-    def __getitem__(self, __key: "str"):
+    def __getitem__(self, __key: str):
         if __key in ResidueDefinition.na_1to3:
             __key = ResidueDefinition.na_1to3[__key]
         return self.res_defs[__key]
 
-    def __contains__(self, __key: "str"):
-        if __key in ResidueDefinition.na_1to3:
-            __key = ResidueDefinition.na_1to3[__key]
+    def __contains__(self, __key: str):
         return __key in self.res_defs
 
-    def __iter__(self):
-        return iter(self.res_defs.values())
+    def get(self, __key: str, default=None):
+        return self.res_defs.get(__key, default)
 
 
 class CGENFFTopologySet:
@@ -1364,7 +1393,9 @@ class TopologyGenerator:
 
         self.cur_defs = self.res_def_dict[entity_type]
         self.cur_param = self.param_dict[entity_type]
-        self.cur_param.fill_ic(self.cur_defs, preserve=preserve)
+
+        if entity_type != "lipid_cholesterol":
+            self.cur_param.fill_ic(self.cur_defs, preserve=preserve)
 
     def _generate_residue_topology(self, residue: Residue, coerce=False, QUIET=False):
         """Load topology definition into the residue and find any missing atoms.
@@ -1772,7 +1803,9 @@ class TopologyGenerator:
         if chain.chain_type == "Polydeoxyribonucleotide":
             self._apply_deoxyribose_patches(chain, QUIET=QUIET)
 
-        self.cur_param.fill_ic(self.cur_defs, preserve_ic)
+        if chain.chain_type != "Sterol":
+            self.cur_param.fill_ic(self.cur_defs, preserve_ic)
+        
         if chain.chain_type in (
             "Polypeptide(L)",
             "Polyribonucleotide",
@@ -1782,7 +1815,10 @@ class TopologyGenerator:
         else:
             topology = HeterogenTopology()
         chain.topology = topology.load_chain(chain)
-        self.cur_param.apply(chain.topology)
+
+        if chain.chain_type != "Sterol":
+            self.cur_param.apply(chain.topology)
+
         return topology
 
     def patch_termini(
