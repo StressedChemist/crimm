@@ -510,7 +510,7 @@ class Solvator:
             n_preserved_ions = self._convert_existing_ions(self.model)
             self.model._solvation_info['preserved_ions'] = n_preserved_ions
 
-        if len(self.model.chains) == 0:
+        if len(list(self.model)) == 0:
             raise ValueError('No chains in model to solvate')
         if orient_coords:
             coorman = CoordManipulator()
@@ -610,43 +610,50 @@ class Solvator:
                 # Skip water and ion chains
                 if chain_type in ('Solvent', 'Ion'):
                     continue
-                for atom in chain.get_atoms(include_alt=False):
+                for atom in chain.get_atoms():
                     atoms.append(atom)
         else:
             # get all atoms
-            atoms = entity.get_atoms(include_alt=False)
+            atoms = entity.get_atoms()
         
         coords = [atom.coord for atom in atoms]
         return np.array(coords)
 
     def remove_existing_water(self, model: Model) -> Model:
         """Removes existing water molecules from the model."""
+    
         remove_list = []
-        for chain in model.chains:
-            if chain.chain_type == 'Solvent':
+    
+        chains = getattr(model, "chains", None)
+        if chains is None:
+            chains = list(model)
+    
+        for chain in chains:
+            if getattr(chain, "chain_type", None) == "Solvent":
                 remove_list.append(chain.id)
-            elif chain.chain_type == 'Ion' and chain.source == 'generated':
-                # Also remove generated ions (not crystallographic)
-                remove_list.append(chain.id)
+    
         for chain_id in remove_list:
-            warnings.warn(
-                f'Removing existing water chain {chain_id} from model',
-                UserWarning
-            )
             model.detach_child(chain_id)
+    
+        return model
     
     def remove_existing_ions(self, model: Model) -> Model:
         """Removes existing ions from the model."""
+    
         remove_list = []
-        for chain in model.chains:
-            if chain.chain_type == 'Ion':
+    
+        chains = getattr(model, "chains", None)
+        if chains is None:
+            chains = list(model)
+    
+        for chain in chains:
+            if getattr(chain, "chain_type", None) == "Ion":
                 remove_list.append(chain.id)
+    
         for chain_id in remove_list:
-            warnings.warn(
-                f'Removing existing ion chain {chain_id} from model',
-                UserWarning
-            )
             model.detach_child(chain_id)
+    
+        return model
 
     def _build_water_hydrogens(self, oxygen_coord: np.ndarray) -> tuple:
         """Build hydrogen positions for a water molecule from oxygen position.
@@ -714,8 +721,12 @@ class Solvator:
         n_converted = 0
         n_hydrogens_built = 0
 
-        for chain in model.chains:
-            if chain.chain_type != 'Solvent':
+        chains = getattr(model, "chains", None)
+        if chains is None:
+            chains = list(model)
+
+        for chain in chains:
+            if getattr(chain, "chain_type", None) != "Solvent":
                 continue
             chain.source = 'crystallographic'  # mark as original waters
             for residue in chain.get_residues():
@@ -770,8 +781,12 @@ class Solvator:
 
         # Count total preserved waters (converted + already TIP3)
         n_preserved = 0
-        for chain in model.chains:
-            if chain.chain_type == 'Solvent':
+        chains = getattr(model, "chains", None)
+        if chains is None:
+            chains = list(model)
+
+        for chain in chains:
+            if getattr(chain, "chain_type", None) == "Solvent":
                 n_preserved = len(list(chain.get_residues()))
                 break
 
@@ -820,8 +835,12 @@ class Solvator:
 
         n_converted = 0
         n_preserved = 0
-        for chain in model.chains:
-            if chain.chain_type != 'Ion':
+        chains = getattr(model, "chains", None)
+        if chains is None:
+            chains = list(model)
+
+        for chain in chains:
+            if getattr(chain, "chain_type", None) != "Ion":
                 continue
             for residue in chain.get_residues():
                 n_preserved += 1
@@ -1030,16 +1049,17 @@ class Solvator:
     def _remove_generated_ions(self):
         """Removes any previously generated ion chains from the model."""
         remove_list = []
-        for chain in self.model.chains:
-            if chain.chain_type == 'Ion' and chain.source == 'generated':
+
+        chains = getattr(self.model, "chains", None)
+        if chains is None:
+            chains = list(self.model)
+
+        for chain in chains:
+            if (
+                getattr(chain, "chain_type", None) == "Ion"
+                and getattr(chain, "source", None) == "generated"
+            ):
                 remove_list.append(chain.id)
-        for chain_id in remove_list:
-            self.model.detach_child(chain_id)
-        if len(remove_list) > 0:
-            warnings.warn(
-                f'Removed {len(remove_list)} previously generated ion chains',
-                UserWarning
-            )
             
     def add_balancing_ions(
             self, present_charge = None, cation='SOD', anion='CLA', skip_undefined=True,
@@ -1085,7 +1105,10 @@ class Solvator:
         )
         if remove_generated_ions:
             self._remove_generated_ions()
-        solvents = [chain for chain in self.model if chain.chain_type == 'Solvent']
+        solvents = [
+            chain for chain in self.model
+            if getattr(chain, "chain_type", None) == "Solvent"
+        ]
         if len(solvents) == 0:
             raise ValueError(
                 'Entity must be a solvated Structure or Model'
@@ -1095,7 +1118,7 @@ class Solvator:
             charge_dict = {}
             total_charges = 0
             for chain in self.model:
-                if chain.chain_type == 'Solvent':
+                if getattr(chain, "chain_type", None) == "Solvent":
                     continue
                 if chain.total_charge is None:
                     if not skip_undefined:
@@ -1221,33 +1244,74 @@ class Solvator:
         """
         total_charge = 0.0
         for chain in self.model:
-            if chain.chain_type == 'Solvent':
+            if getattr(chain, "chain_type", None) == "Solvent":
                 continue
-            if chain.chain_type == 'Ion':
+            if getattr(chain, "chain_type", None) == "Ion":
                 # Include existing ion charges (e.g., Zn2+, Mg2+, Ca2+)
                 ion_charge = self._get_ion_chain_charge(chain)
                 total_charge += ion_charge
                 continue
-            if chain.total_charge is None:
+            chain_total_charge = getattr(chain, "total_charge", None)
+
+            if chain_total_charge is None:
+                chain_total_charge = self._estimate_protein_chain_charge(chain)
+            
+            if chain_total_charge is None:
                 if not skip_undefined:
                     raise ValueError(
-                        f'Chain {chain.id} has no topology definition for atom charge! '
-                        'Cannot calculate total charge.'
+                        f"Chain {chain.id} has no topology definition for atom charge! "
+                        "Cannot calculate total charge."
                     )
                 warnings.warn(
-                    f'Chain {chain.id} has no topology definition for atom charge! '
-                    'Assuming zero charge.',
-                    UserWarning
+                    f"Chain {chain.id} has no topology definition for atom charge; "
+                    "assuming charge 0 for ion placement.",
+                    UserWarning,
                 )
                 continue
-            total_charge += chain.total_charge
+            
+            total_charge += chain_total_charge
         return total_charge
+
+    @staticmethod
+    def _estimate_protein_chain_charge(chain):
+        """Estimate protein chain charge from standard residue names."""
+    
+        residue_charge = {
+            "ARG": 1.0,
+            "LYS": 1.0,
+            "HSP": 1.0,
+            "ASP": -1.0,
+            "GLU": -1.0,
+        }
+    
+        protein_resnames = {
+            "ALA", "ARG", "ASN", "ASP", "CYS", "CYX",
+            "GLN", "GLU", "GLY", "HIS", "HSD", "HSE", "HSP",
+            "ILE", "LEU", "LYS", "MET", "PHE", "PRO", "SER", "THR",
+            "TRP", "TYR", "VAL",
+        }
+    
+        charge = 0.0
+        n_protein_residues = 0
+    
+        for residue in chain.get_residues():
+            resname = residue.get_resname().strip().upper()
+            if resname not in protein_resnames:
+                continue
+    
+            n_protein_residues += 1
+            charge += residue_charge.get(resname, 0.0)
+    
+        if n_protein_residues == 0:
+            return None
+    
+        return round(charge, 2)
 
     def _count_waters(self) -> int:
         """Count total number of water molecules in solvent chains."""
         n_water = 0
         for chain in self.model:
-            if chain.chain_type == 'Solvent':
+            if getattr(chain, "chain_type", None) == "Solvent":
                 n_water += len(list(chain.get_residues()))
         return n_water
 
@@ -1515,7 +1579,7 @@ class Solvator:
         # Build KDTree of solute atoms
         solute_coords = []
         for chain in self.model:
-            if chain.chain_type not in ('Solvent', 'Ion'):
+            if getattr(chain, "chain_type", None) not in ("Solvent", "Ion"):
                 for atom in chain.get_atoms():
                     solute_coords.append(atom.coord)
 
@@ -1633,7 +1697,10 @@ class Solvator:
             self._remove_generated_ions()
 
         # Verify system is solvated
-        solvents = [c for c in self.model if c.chain_type == 'Solvent']
+        solvents = [
+            c for c in self.model
+            if getattr(c, "chain_type", None) == "Solvent"
+        ]
         if len(solvents) == 0:
             raise ValueError(
                 "Entity must be solvated before adding ions. Run solvate() first."
