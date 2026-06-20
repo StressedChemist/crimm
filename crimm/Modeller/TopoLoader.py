@@ -2700,4 +2700,4 @@ class ResiduePatcher:
         CB_def.charge = -0.10
         self.res.is_modified = True
 
-        return self.res
+        return self.res 
