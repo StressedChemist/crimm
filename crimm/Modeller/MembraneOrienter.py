@@ -1,7 +1,7 @@
 """Orient proteins for membrane building.
 
 This module implements the geometry used by the PERMM/PPM orientation step:
-rotate a coordinate set by angle ``teta`` around an axis in the XY plane whose
+rotate a coordinate set by angle ``teta`` around an axis in the XY plane whose 
 direction is defined by ``phi``.  The default scorer is an atom-level
 PERMM-style transfer-energy approximation: each heavy atom is assigned a
 depth-dependent cost or reward for being in the membrane core/interface.
