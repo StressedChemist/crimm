@@ -571,4 +571,4 @@ def convert_chain(chain: _Chain):
         res = res.copy()
         pchain.add(res)
     chain.detach_parent()
-    return pchain
+    return pchain 
