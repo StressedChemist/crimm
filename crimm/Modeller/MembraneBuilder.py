@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """Build protein-membrane systems using native crimm objects."""
 
 from dataclasses import dataclass
@@ -5,18 +7,28 @@ from pathlib import Path
 import tarfile
 
 import numpy as np
+from scipy.spatial import KDTree
 
 from crimm.Modeller.Solvator import Solvator
 from crimm.Modeller.TopoLoader import TopologyGenerator
 from crimm.StructEntities.Chain import Lipid, Sterol
 from crimm.StructEntities.Model import Model
 
-from pathlib import Path
-import tarfile
-
 
 STEROL_RESNAMES = frozenset({"CHL1"})
 
+DEFAULT_LIPID_AREAS = {
+    "POPC": 64.0,
+    "POPE": 58.0,
+    "POPG": 62.0,
+    "POPS": 62.0,
+    "DLPC": 63.0,
+    "DLPE": 56.0,
+    "DMPC": 60.0,
+    "DOPC": 67.0,
+    "DPPC": 64.0,
+    "CHL1": 40.0,
+}
 
 @dataclass
 class MembraneSpec:
@@ -28,7 +40,10 @@ class MembraneSpec:
     upper_leaflet: dict[str, int] | None = None
     lower_leaflet: dict[str, int] | None = None
     lipid_ratios: dict[str, float] | None = None
-    area_per_lipid: float = 65.0
+    area_per_lipid: float | None = None
+    lipid_area_overrides: dict[str, float] | None = None
+    account_for_protein_footprint: bool = True
+    protein_footprint_sample_spacing: float = 2.0
     lipid_z: float = 20
     lipid_z_scale: float = 0.6
     random_seed: int = 12345
@@ -43,7 +58,7 @@ class MembraneSpec:
     membrane_clash_cutoff: float = 1.2
     max_repack_attempts: int = 20
     water_solvcut: float = 2.8
-    remove_membrane_core_waters: bool = True
+    remove_membrane_core_waters: bool = False
     membrane_core_z: float = 15.0
     salt_concentration: float = 0.15
     cation: str = "POT"
@@ -181,8 +196,10 @@ class MembraneBuilder:
                 "Either upper_leaflet/lower_leaflet counts or lipid_ratios must be provided."
             )
 
-        box_x, box_y = self.spec.box_xy
-        total_count = int(round((box_x * box_y) / self.spec.area_per_lipid))
+        ratios = self._normalized_lipid_ratios()
+        target_area = self._target_area_per_lipid(ratios)
+        leaflet_area = self._available_leaflet_area()
+        total_count = int(round(leaflet_area / target_area))
 
         if total_count <= 0:
             raise ValueError("Estimated leaflet lipid count must be positive.")
@@ -217,6 +234,135 @@ class MembraneBuilder:
                 counts[resname] += 1
 
         return {resname: count for resname, count in counts.items() if count > 0}
+
+    def _normalized_lipid_ratios(self):
+        """Return normalized lipid/sterol ratios from the membrane spec."""
+
+        ratios = {
+            resname.upper(): float(ratio)
+            for resname, ratio in self.spec.lipid_ratios.items()
+        }
+
+        ratio_sum = sum(ratios.values())
+        if ratio_sum <= 0:
+            raise ValueError("lipid_ratios must sum to a positive value.")
+
+        return {
+            resname: ratio / ratio_sum
+            for resname, ratio in ratios.items()
+        }
+
+    def _target_area_per_lipid(self, normalized_ratios):
+        """Return explicit or composition-estimated area per leaflet molecule."""
+
+        if self.spec.area_per_lipid is not None:
+            target_area = float(self.spec.area_per_lipid)
+            if target_area <= 0:
+                raise ValueError("area_per_lipid must be positive.")
+            return target_area
+
+        area_by_resname = DEFAULT_LIPID_AREAS.copy()
+        if self.spec.lipid_area_overrides is not None:
+            area_by_resname.update(
+                {
+                    resname.upper(): float(area)
+                    for resname, area in self.spec.lipid_area_overrides.items()
+                }
+            )
+
+        missing = [
+            resname for resname in normalized_ratios
+            if resname not in area_by_resname
+        ]
+        if missing:
+            missing_names = ", ".join(sorted(missing))
+            raise ValueError(
+                "No default area-per-lipid is available for "
+                f"{missing_names}. Pass area_per_lipid=... for the whole "
+                "mixture, or lipid_area_overrides={...} for those residues."
+            )
+
+        target_area = sum(
+            normalized_ratios[resname] * area_by_resname[resname]
+            for resname in normalized_ratios
+        )
+        if target_area <= 0:
+            raise ValueError("Estimated area per lipid must be positive.")
+        return target_area
+
+    def _available_leaflet_area(self):
+        """Return membrane area available to lipids in one leaflet."""
+
+        box_x, box_y = self.spec.box_xy
+        box_area = float(box_x * box_y)
+
+        if not self.spec.account_for_protein_footprint:
+            return box_area
+
+        return max(box_area - self._protein_footprint_area(), 0.0)
+
+    def _protein_footprint_area(self):
+        """Estimate XY area excluded by membrane-core protein atoms."""
+
+        protein_xy = self._protein_xy_coords()
+        if len(protein_xy) == 0:
+            return 0.0
+
+        spacing = float(self.spec.protein_footprint_sample_spacing)
+        if spacing <= 0:
+            raise ValueError("protein_footprint_sample_spacing must be positive.")
+
+        box_x, box_y = self.spec.box_xy
+        nx = max(1, int(np.ceil(box_x / spacing)))
+        ny = max(1, int(np.ceil(box_y / spacing)))
+        cell_area = (box_x / nx) * (box_y / ny)
+
+        xs = np.linspace(
+            -box_x / 2 + box_x / (2 * nx),
+            box_x / 2 - box_x / (2 * nx),
+            nx,
+        )
+        ys = np.linspace(
+            -box_y / 2 + box_y / (2 * ny),
+            box_y / 2 - box_y / (2 * ny),
+            ny,
+        )
+        grid_x, grid_y = np.meshgrid(xs, ys, indexing="xy")
+        sample_points = np.column_stack([grid_x.ravel(), grid_y.ravel()])
+
+        tree = KDTree(protein_xy)
+        excluded_counts = tree.query_ball_point(
+            sample_points,
+            r=float(self.spec.protein_exclusion_radius),
+            return_length=True,
+        )
+        return float(np.count_nonzero(excluded_counts) * cell_area)
+
+    @staticmethod
+    def _counts_from_ratios(total_count, normalized):
+        """Convert a total leaflet count into integer residue counts."""
+
+        counts = {
+            resname: int(np.floor(total_count * ratio))
+            for resname, ratio in normalized.items()
+        }
+        remainder = total_count - sum(counts.values())
+
+        if remainder <= 0:
+            return counts
+
+        fractional = sorted(
+            (
+                (total_count * ratio - counts[resname], resname)
+                for resname, ratio in normalized.items()
+            ),
+            reverse=True,
+        )
+
+        for _, resname in fractional[:remainder]:
+            counts[resname] += 1
+
+        return counts
 
     def build(self) -> MembraneBuildResult:
         """Run the full membrane-building workflow."""
@@ -323,6 +469,8 @@ class MembraneBuilder:
             box_type="ortho",
             box_dims=box_dims,
             orient_coords=False,
+            remove_existing_water=True,
+            remove_existing_ions=False,
             solvcut=self.spec.water_solvcut,
         )
     
@@ -332,7 +480,7 @@ class MembraneBuilder:
         return water_chains
 
     def _remove_waters_in_membrane_core(self):
-        """Remove generated waters whose oxygen atoms are inside the membrane core."""
+        """Optionally remove waters in the membrane core for CHARMM-GUI-style cleanup."""
     
         removed = 0
         z_cutoff = float(self.spec.membrane_core_z)
