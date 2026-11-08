@@ -1,0 +1,3048 @@
+{
+  "schema_version": 1,
+  "paper_doi": "10.1016/j.jmb.2025.168966",
+  "recipe_doi": "10.1021/acs.jcim.1c01514",
+  "recipe_url": "https://www.charmm-gui.org/?doc=archive&lib=biomembrane",
+  "recipe_sha256": "f334a8c860eb0421d7560efac4c444e86139dad2d41a773de1bb8d20a17770bf",
+  "membranes": [
+    {
+      "id": "PMm",
+      "name": "asymmetric mammalian plasma membrane",
+      "kind": "biological",
+      "ppm_membrane": "PMm",
+      "temperature_K": 310.15,
+      "reference_box_A": [
+        75.26,
+        75.26,
+        122.17
+      ],
+      "upper_ratios": {
+        "GALCER": 4,
+        "SSM": 11,
+        "PLPC": 22,
+        "NSM": 11,
+        "CHL1": 37,
+        "PAPE": 3,
+        "POPC": 16,
+        "POPE": 3
+      },
+      "lower_ratios": {
+        "POPE": 14,
+        "POPC": 7,
+        "POPI": 5,
+        "CHL1": 29,
+        "PLPC": 11,
+        "PAPS": 11,
+        "PAPE": 12,
+        "NSM": 5,
+        "SSM": 5,
+        "POPA": 1
+      },
+      "reference_areas_A2": {
+        "POPC": [
+          56.87,
+          57.08
+        ],
+        "PLPC": [
+          57.33,
+          57.35
+        ],
+        "PAPE": [
+          57.6,
+          58.41
+        ],
+        "POPE": [
+          55.07,
+          56.59
+        ],
+        "POPI": [
+          null,
+          56.78
+        ],
+        "PAPS": [
+          null,
+          58.27
+        ],
+        "POPA": [
+          null,
+          55.74
+        ],
+        "SSM": [
+          50.09,
+          49.65
+        ],
+        "NSM": [
+          49.5,
+          49.92
+        ],
+        "CMH": [
+          47.27,
+          null
+        ],
+        "CHL1": [
+          27.9,
+          28.71
+        ]
+      },
+      "reference_charges_e": {
+        "POPC": 0.0,
+        "PLPC": 0.0,
+        "PAPE": 0.0,
+        "POPE": 0.0,
+        "POPI": -1.0,
+        "PAPS": -1.0,
+        "POPA": -1.0,
+        "SSM": 0.0,
+        "NSM": 0.0,
+        "CMH": 0.0,
+        "CHL1": 0.0
+      },
+      "lipid_descriptions": {
+        "POPC": "PC(16:0/18:1(9Z))",
+        "PLPC": "PC(16:0/18:2(9Z,12Z))",
+        "PAPE": "PE(16:0/20:4(5Z,8Z,11Z,14Z))",
+        "POPE": "PE(16:0/18:1(9Z))",
+        "POPI": "PI(16:0/18:1(9Z))",
+        "PAPS": "PS(16:0/20:4(5Z,8Z,11Z,14Z))",
+        "POPA": "PA(16:0/18:1(9Z))",
+        "SSM": "SM(d18:1/18:0)",
+        "NSM": "SM(d18:1/24:1)",
+        "CMH": "GlcCer(d18:1/16:0)",
+        "CHL1": "Cholesterol"
+      },
+      "table_reported_totals": [
+        107,
+        100
+      ],
+      "table_row_totals": [
+        107,
+        100
+      ],
+      "table_totals_match": true,
+      "archive_url": "https://www.charmm-gui.org/archive/biomembrane/PMm/PMm.tar.gz",
+      "requires_calcium": false,
+      "archive_sha256": "43c90ab4278a992c4af5887046b3a756a210b700a6c427a0e787dc4499a1de5b",
+      "published_upper_ratios": {
+        "POPC": 16,
+        "PLPC": 22,
+        "PAPE": 3,
+        "POPE": 3,
+        "SSM": 11,
+        "NSM": 11,
+        "CMH": 4,
+        "CHL1": 37
+      },
+      "published_lower_ratios": {
+        "POPC": 7,
+        "PLPC": 11,
+        "PAPE": 12,
+        "POPE": 14,
+        "POPI": 5,
+        "PAPS": 11,
+        "POPA": 1,
+        "SSM": 5,
+        "NSM": 5,
+        "CHL1": 29
+      },
+      "lipid_aliases": {
+        "CMH": "GALCER"
+      },
+      "whole_molecule_counts": [
+        {
+          "GALCER": 4,
+          "SSM": 11,
+          "PLPC": 22,
+          "NSM": 11,
+          "CHL1": 37,
+          "PAPE": 3,
+          "POPC": 16,
+          "POPE": 3
+        },
+        {
+          "POPE": 14,
+          "POPC": 7,
+          "POPI": 5,
+          "CHL1": 29,
+          "PLPC": 11,
+          "PAPS": 11,
+          "PAPE": 12,
+          "NSM": 5,
+          "SSM": 5,
+          "POPA": 1
+        }
+      ]
+    },
+    {
+      "id": "PMf",
+      "name": "asymmetric plasma membrane of fungi",
+      "kind": "biological",
+      "ppm_membrane": "PMf",
+      "temperature_K": 303.15,
+      "reference_box_A": [
+        108.3,
+        108.3,
+        114.04
+      ],
+      "upper_ratios": {
+        "MIPC": 54,
+        "DYPC": 8,
+        "ERG": 49,
+        "POPI": 5,
+        "YOPA": 3,
+        "POPS": 7,
+        "YOPE": 3,
+        "PYPE": 1,
+        "YOPC": 3,
+        "POPE": 3
+      },
+      "lower_ratios": {
+        "DYPC": 10,
+        "POPI": 20,
+        "POPS": 31,
+        "YOPA": 8,
+        "ERG": 4,
+        "YOPE": 6,
+        "POPE": 10,
+        "PYPE": 5,
+        "YOPC": 6
+      },
+      "reference_areas_A2": {
+        "DYPC": [
+          56.1,
+          62.2
+        ],
+        "YOPC": [
+          51.86,
+          61.71
+        ],
+        "POPE": [
+          53.44,
+          60.76
+        ],
+        "PYPE": [
+          51.94,
+          59.84
+        ],
+        "YOPE": [
+          54.79,
+          60.68
+        ],
+        "POPI": [
+          55.29,
+          60.44
+        ],
+        "POPS": [
+          57.53,
+          59.55
+        ],
+        "YOPA": [
+          53.97,
+          59.92
+        ],
+        "ERG": [
+          26.53,
+          29.64
+        ],
+        "MIPC": [
+          50.26,
+          null
+        ]
+      },
+      "reference_charges_e": {
+        "DYPC": 0.0,
+        "YOPC": 0.0,
+        "POPE": 0.0,
+        "PYPE": 0.0,
+        "YOPE": 0.0,
+        "POPI": -1.0,
+        "POPS": -1.0,
+        "YOPA": -1.0,
+        "ERG": 0.0,
+        "MIPC": 0.0
+      },
+      "lipid_descriptions": {
+        "DYPC": "PC(16:1(9Z)/16:1(9Z))",
+        "YOPC": "PC(16:1(9Z)/18:1(9Z))",
+        "POPE": "PE(16:0/18:1(9Z))",
+        "PYPE": "PE(16:0/16:1(9Z))",
+        "YOPE": "PE(16:1(9Z)/18:1(9Z))",
+        "POPI": "PI(16:0/18:1(9Z))",
+        "POPS": "PS(16:0/18:1(9Z))",
+        "YOPA": "PA(16:1(9Z)/18:1(9Z)",
+        "ERG": "Ergosterol",
+        "MIPC": "MIPC(d18:1/16:0)"
+      },
+      "table_reported_totals": [
+        136,
+        100
+      ],
+      "table_row_totals": [
+        136,
+        100
+      ],
+      "table_totals_match": true,
+      "archive_url": "https://www.charmm-gui.org/archive/biomembrane/PMf/PMf.tar.gz",
+      "requires_calcium": false,
+      "archive_sha256": "3081823e3a897b2d209f018057469cc9effa117a0ccfa03cb1485f2722aad89d",
+      "published_upper_ratios": {
+        "DYPC": 8,
+        "YOPC": 3,
+        "POPE": 3,
+        "PYPE": 1,
+        "YOPE": 3,
+        "POPI": 5,
+        "POPS": 7,
+        "YOPA": 3,
+        "ERG": 49,
+        "MIPC": 54
+      },
+      "published_lower_ratios": {
+        "DYPC": 10,
+        "YOPC": 6,
+        "POPE": 10,
+        "PYPE": 5,
+        "YOPE": 6,
+        "POPI": 20,
+        "POPS": 31,
+        "YOPA": 8,
+        "ERG": 4
+      },
+      "lipid_aliases": {},
+      "whole_molecule_counts": [
+        {
+          "MIPC": 54,
+          "DYPC": 8,
+          "ERG": 49,
+          "POPI": 5,
+          "YOPA": 3,
+          "POPS": 7,
+          "YOPE": 3,
+          "PYPE": 1,
+          "YOPC": 3,
+          "POPE": 3
+        },
+        {
+          "DYPC": 10,
+          "POPI": 20,
+          "POPS": 31,
+          "YOPA": 8,
+          "ERG": 4,
+          "YOPE": 6,
+          "POPE": 10,
+          "PYPE": 5,
+          "YOPC": 6
+        }
+      ]
+    },
+    {
+      "id": "PMp",
+      "name": "asymmetric plasma membrane of plant and algae",
+      "kind": "biological",
+      "ppm_membrane": "PMp",
+      "temperature_K": 298.15,
+      "reference_box_A": [
+        86.46,
+        86.46,
+        112.07
+      ],
+      "upper_ratios": {
+        "GLCCER": 15,
+        "SITO": 33,
+        "STIG": 23,
+        "DPPE": 8,
+        "CAMP": 8,
+        "SOPC": 3,
+        "LLPA": 3,
+        "LLPE": 7,
+        "DPPC": 3,
+        "LLPS": 1,
+        "LLPC": 7,
+        "DPPA": 2,
+        "SOPE": 1
+      },
+      "lower_ratios": {
+        "DGDGLI": 2,
+        "SITO": 16,
+        "LLPC": 10,
+        "LLPE": 10,
+        "DPPA": 4,
+        "LINPI": 2,
+        "STIG": 12,
+        "DPPC": 6,
+        "DPPG": 4,
+        "LLPS": 2,
+        "SOPC": 4,
+        "DPPE": 12,
+        "SOPA": 2,
+        "LLPA": 5,
+        "DPPI": 3,
+        "CAMP": 4,
+        "SOPE": 2
+      },
+      "reference_areas_A2": {
+        "DPPC": [
+          57.64,
+          54.34
+        ],
+        "LLPC": [
+          59.39,
+          59.29
+        ],
+        "SOPC": [
+          58.69,
+          57.11
+        ],
+        "DPPE": [
+          55.02,
+          53.9
+        ],
+        "LLPE": [
+          60.05,
+          57.31
+        ],
+        "SOPE": [
+          56.46,
+          55.68
+        ],
+        "DPPA": [
+          54.24,
+          53.74
+        ],
+        "LLPA": [
+          60.49,
+          58.12
+        ],
+        "SOPA": [
+          null,
+          56.49
+        ],
+        "DPPI": [
+          null,
+          55.23
+        ],
+        "LLPI": [
+          null,
+          57.67
+        ],
+        "LLPS": [
+          59.25,
+          58.08
+        ],
+        "DPPG": [
+          null,
+          56.09
+        ],
+        "DGDG": [
+          null,
+          59.36
+        ],
+        "CMH": [
+          48.33,
+          null
+        ],
+        "SITO": [
+          30.83,
+          28.94
+        ],
+        "STIG": [
+          31.02,
+          28.36
+        ],
+        "CAMP": [
+          32.17,
+          28.21
+        ]
+      },
+      "reference_charges_e": {
+        "DPPC": 0.0,
+        "LLPC": 0.0,
+        "SOPC": 0.0,
+        "DPPE": 0.0,
+        "LLPE": 0.0,
+        "SOPE": 0.0,
+        "DPPA": -1.0,
+        "LLPA": -1.0,
+        "SOPA": -1.0,
+        "DPPI": -1.0,
+        "LLPI": -1.0,
+        "LLPS": -1.0,
+        "DPPG": -1.0,
+        "DGDG": 0.0,
+        "CMH": 0.0,
+        "SITO": 0.0,
+        "STIG": 0.0,
+        "CAMP": 0.0
+      },
+      "lipid_descriptions": {
+        "DPPC": "PC(16:0/16:0)",
+        "LLPC": "PC(18:2(9Z,12Z)/18:3(9Z, 12Z, 15Z))",
+        "SOPC": "PC(18:0/18:1(9Z))",
+        "DPPE": "PE(16:0/16:0)",
+        "LLPE": "PE(18:2(9Z,12Z)/18:3(9Z, 12Z, 15Z))",
+        "SOPE": "PE(18:0/18:1(9Z)",
+        "DPPA": "PA(16:0/16:0)",
+        "LLPA": "PA(18:2(9Z,12Z)/18:3(9Z, 12Z, 15Z))",
+        "SOPA": "PA(18:0/18:1(9Z)",
+        "DPPI": "PI(16:0/16:0)",
+        "LLPI": "PI(18:2(9Z,12Z)/18:3(9Z, 12Z, 15Z))",
+        "LLPS": "PS(18:2(9Z,12Z)/18:3(9Z, 12Z, 15Z))",
+        "DPPG": "PG(16:0/16:0)",
+        "DGDG": "DGDG(18:3(9Z,12Z,15Z)/18:3(9Z,12Z,15Z))",
+        "CMH": "GlcCer(d18:1/16:0)",
+        "SITO": "\u03b2-Sitosterol",
+        "STIG": "Stigmasterol",
+        "CAMP": "Campesterol"
+      },
+      "table_reported_totals": [
+        114,
+        100
+      ],
+      "table_row_totals": [
+        114,
+        100
+      ],
+      "table_totals_match": true,
+      "archive_url": "https://www.charmm-gui.org/archive/biomembrane/PMp/PMp.tar.gz",
+      "requires_calcium": false,
+      "archive_sha256": "9ca4b14b5e023a690e1dd19164880498d724a3eedd78037208dac4f24a399edb",
+      "published_upper_ratios": {
+        "DPPC": 3,
+        "LLPC": 7,
+        "SOPC": 3,
+        "DPPE": 8,
+        "LLPE": 7,
+        "SOPE": 1,
+        "DPPA": 2,
+        "LLPA": 3,
+        "LLPS": 1,
+        "CMH": 15,
+        "SITO": 33,
+        "STIG": 23,
+        "CAMP": 8
+      },
+      "published_lower_ratios": {
+        "DPPC": 6,
+        "LLPC": 10,
+        "SOPC": 4,
+        "DPPE": 12,
+        "LLPE": 10,
+        "SOPE": 2,
+        "DPPA": 4,
+        "LLPA": 5,
+        "SOPA": 2,
+        "DPPI": 3,
+        "LLPI": 2,
+        "LLPS": 2,
+        "DPPG": 4,
+        "DGDG": 2,
+        "SITO": 16,
+        "STIG": 12,
+        "CAMP": 4
+      },
+      "lipid_aliases": {
+        "CMH": "GLCCER",
+        "DGDG": "DGDGLI",
+        "LLPI": "LINPI"
+      },
+      "whole_molecule_counts": [
+        {
+          "GLCCER": 15,
+          "SITO": 33,
+          "STIG": 23,
+          "DPPE": 8,
+          "CAMP": 8,
+          "SOPC": 3,
+          "LLPA": 3,
+          "LLPE": 7,
+          "DPPC": 3,
+          "LLPS": 1,
+          "LLPC": 7,
+          "DPPA": 2,
+          "SOPE": 1
+        },
+        {
+          "DGDGLI": 2,
+          "SITO": 16,
+          "LLPC": 10,
+          "LLPE": 10,
+          "DPPA": 4,
+          "LINPI": 2,
+          "STIG": 12,
+          "DPPC": 6,
+          "DPPG": 4,
+          "LLPS": 2,
+          "SOPC": 4,
+          "DPPE": 12,
+          "SOPA": 2,
+          "LLPA": 5,
+          "DPPI": 3,
+          "CAMP": 4,
+          "SOPE": 2
+        }
+      ]
+    },
+    {
+      "id": "ERm",
+      "name": "mammalian endoplasmic reticulum membranes",
+      "kind": "biological",
+      "ppm_membrane": "ERm",
+      "temperature_K": 310.15,
+      "reference_box_A": [
+        80.35,
+        80.35,
+        100.0
+      ],
+      "upper_ratios": {
+        "PLPC": 18,
+        "POPC": 16,
+        "SAPC": 27,
+        "POPA": 1,
+        "PSM": 4,
+        "PSPE": 8,
+        "CHL1": 5,
+        "SAPE": 7,
+        "OLPS": 3,
+        "POPE": 5,
+        "SAPI": 3,
+        "SLPI": 3
+      },
+      "lower_ratios": {
+        "PLPC": 18,
+        "POPE": 5,
+        "PSM": 4,
+        "POPC": 16,
+        "SAPC": 27,
+        "PSPE": 8,
+        "CHL1": 5,
+        "SAPE": 7,
+        "SLPI": 3,
+        "OLPS": 3,
+        "SAPI": 3,
+        "POPA": 1
+      },
+      "reference_areas_A2": {
+        "POPC": [
+          63.18,
+          63.18
+        ],
+        "PLPC": [
+          63.54,
+          63.54
+        ],
+        "SAPC": [
+          64.81,
+          64.81
+        ],
+        "POPE": [
+          62.41,
+          62.41
+        ],
+        "PSPE": [
+          61.3,
+          61.3
+        ],
+        "SAPE": [
+          64.03,
+          64.03
+        ],
+        "SAPI": [
+          64.06,
+          64.06
+        ],
+        "SLPI": [
+          62.52,
+          62.52
+        ],
+        "OLPS": [
+          60.73,
+          60.73
+        ],
+        "PSM": [
+          59.09,
+          59.09
+        ],
+        "POPA": [
+          62.14,
+          62.14
+        ],
+        "CHL1": [
+          29.8,
+          29.8
+        ]
+      },
+      "reference_charges_e": {
+        "POPC": 0.0,
+        "PLPC": 0.0,
+        "SAPC": 0.0,
+        "POPE": 0.0,
+        "PSPE": 0.0,
+        "SAPE": 0.0,
+        "SAPI": -1.0,
+        "SLPI": -1.0,
+        "OLPS": -1.0,
+        "PSM": 0.0,
+        "POPA": -1.0,
+        "CHL1": 0.0
+      },
+      "lipid_descriptions": {
+        "POPC": "PC(16:0/18:1(9Z))",
+        "PLPC": "PC(16:0/18:2(9Z,12Z))",
+        "SAPC": "PC(18:0/20:4(5Z,8Z,11Z,14Z))",
+        "POPE": "PE(16:0/18:1(9Z))",
+        "PSPE": "PE(16:0/18:0)",
+        "SAPE": "PE(18:0/20:4(5Z,8Z,11Z,14Z))",
+        "SAPI": "PI(18:0/20:4(5Z,8Z,11Z,14Z))",
+        "SLPI": "PI(18:0/18:2(9Z,12Z))",
+        "OLPS": "PS(18:1(9Z)/18:2(9Z,12Z))",
+        "PSM": "SM(d18:1/16:0)",
+        "POPA": "PA(16:0/18:1(9Z))",
+        "CHL1": "Cholesterol"
+      },
+      "table_reported_totals": [
+        100,
+        100
+      ],
+      "table_row_totals": [
+        100,
+        100
+      ],
+      "table_totals_match": true,
+      "archive_url": "https://www.charmm-gui.org/archive/biomembrane/ERm/ERm.tar.gz",
+      "requires_calcium": false,
+      "archive_sha256": "c161537f2dce4657a73e09cd19598085d9e918a14e1a235aff37b81221ec04fb",
+      "published_upper_ratios": {
+        "POPC": 16,
+        "PLPC": 18,
+        "SAPC": 27,
+        "POPE": 5,
+        "PSPE": 8,
+        "SAPE": 7,
+        "SAPI": 3,
+        "SLPI": 3,
+        "OLPS": 3,
+        "PSM": 4,
+        "POPA": 1,
+        "CHL1": 5
+      },
+      "published_lower_ratios": {
+        "POPC": 16,
+        "PLPC": 18,
+        "SAPC": 27,
+        "POPE": 5,
+        "PSPE": 8,
+        "SAPE": 7,
+        "SAPI": 3,
+        "SLPI": 3,
+        "OLPS": 3,
+        "PSM": 4,
+        "POPA": 1,
+        "CHL1": 5
+      },
+      "lipid_aliases": {},
+      "whole_molecule_counts": [
+        {
+          "PLPC": 18,
+          "POPC": 16,
+          "SAPC": 27,
+          "POPA": 1,
+          "PSM": 4,
+          "PSPE": 8,
+          "CHL1": 5,
+          "SAPE": 7,
+          "OLPS": 3,
+          "POPE": 5,
+          "SAPI": 3,
+          "SLPI": 3
+        },
+        {
+          "PLPC": 18,
+          "POPE": 5,
+          "PSM": 4,
+          "POPC": 16,
+          "SAPC": 27,
+          "PSPE": 8,
+          "CHL1": 5,
+          "SAPE": 7,
+          "SLPI": 3,
+          "OLPS": 3,
+          "SAPI": 3,
+          "POPA": 1
+        }
+      ]
+    },
+    {
+      "id": "ERf",
+      "name": "fungi endoplasmic reticulum membranes",
+      "kind": "biological",
+      "ppm_membrane": "ERf",
+      "temperature_K": 303.15,
+      "reference_box_A": [
+        80.76,
+        80.76,
+        100.0
+      ],
+      "upper_ratios": {
+        "YOPA": 4,
+        "DYPC": 28,
+        "YOPC": 19,
+        "DYPE": 7,
+        "POPS": 8,
+        "POPI": 14,
+        "ERG": 4,
+        "PYPI": 9,
+        "YOPE": 7
+      },
+      "lower_ratios": {
+        "YOPA": 4,
+        "YOPE": 7,
+        "DYPC": 28,
+        "YOPC": 19,
+        "ERG": 4,
+        "POPS": 8,
+        "POPI": 14,
+        "PYPI": 9,
+        "DYPE": 7
+      },
+      "reference_areas_A2": {
+        "DYPC": [
+          64.64,
+          64.64
+        ],
+        "YOPC": [
+          64.64,
+          64.64
+        ],
+        "DYPE": [
+          63.65,
+          63.65
+        ],
+        "YOPE": [
+          63.18,
+          63.18
+        ],
+        "POPI": [
+          63.27,
+          63.27
+        ],
+        "PYPI": [
+          64.24,
+          64.24
+        ],
+        "POPS": [
+          62.6,
+          62.6
+        ],
+        "YOPA": [
+          62.91,
+          62.91
+        ],
+        "ERG": [
+          31.02,
+          31.02
+        ]
+      },
+      "reference_charges_e": {
+        "DYPC": 0.0,
+        "YOPC": 0.0,
+        "DYPE": 0.0,
+        "YOPE": 0.0,
+        "POPI": -1.0,
+        "PYPI": -1.0,
+        "POPS": -1.0,
+        "YOPA": -1.0,
+        "ERG": 0.0
+      },
+      "lipid_descriptions": {
+        "DYPC": "PC(16:1(9Z)/16:1(9Z))",
+        "YOPC": "PC(16:1(9Z)/18:1(9Z))",
+        "DYPE": "PE(16:1(9Z)/16:1(9Z))",
+        "YOPE": "PE(16:1(9Z)/18:1(9Z))",
+        "POPI": "PI(16:0/18:1(9Z))",
+        "PYPI": "PI(16:0/16:1(9Z))",
+        "POPS": "PS(16:0/18:1(9Z))",
+        "YOPA": "PA(16:1(9Z)/18:1(9Z))",
+        "ERG": "Ergosterol"
+      },
+      "table_reported_totals": [
+        100,
+        100
+      ],
+      "table_row_totals": [
+        100,
+        100
+      ],
+      "table_totals_match": true,
+      "archive_url": "https://www.charmm-gui.org/archive/biomembrane/ERf/ERf.tar.gz",
+      "requires_calcium": false,
+      "archive_sha256": "1f01433bed69ed5da2ecae2c35c3c4e7b0ee263e53ccac771dc2d972cccfbe34",
+      "published_upper_ratios": {
+        "DYPC": 28,
+        "YOPC": 19,
+        "DYPE": 7,
+        "YOPE": 7,
+        "POPI": 14,
+        "PYPI": 9,
+        "POPS": 8,
+        "YOPA": 4,
+        "ERG": 4
+      },
+      "published_lower_ratios": {
+        "DYPC": 28,
+        "YOPC": 19,
+        "DYPE": 7,
+        "YOPE": 7,
+        "POPI": 14,
+        "PYPI": 9,
+        "POPS": 8,
+        "YOPA": 4,
+        "ERG": 4
+      },
+      "lipid_aliases": {},
+      "whole_molecule_counts": [
+        {
+          "YOPA": 4,
+          "DYPC": 28,
+          "YOPC": 19,
+          "DYPE": 7,
+          "POPS": 8,
+          "POPI": 14,
+          "ERG": 4,
+          "PYPI": 9,
+          "YOPE": 7
+        },
+        {
+          "YOPA": 4,
+          "YOPE": 7,
+          "DYPC": 28,
+          "YOPC": 19,
+          "ERG": 4,
+          "POPS": 8,
+          "POPI": 14,
+          "PYPI": 9,
+          "DYPE": 7
+        }
+      ]
+    },
+    {
+      "id": "GOLm",
+      "name": "mmalian Golgi membranes",
+      "kind": "biological",
+      "ppm_membrane": "GOL",
+      "temperature_K": 310.15,
+      "reference_box_A": [
+        78.1,
+        78.1,
+        100.0
+      ],
+      "upper_ratios": {
+        "PLPC": 14,
+        "SAPC": 20,
+        "TSM": 12,
+        "PLPE": 4,
+        "PSPE": 8,
+        "SAPE": 5,
+        "POPI": 5,
+        "LPC16": 5,
+        "CHL1": 8,
+        "PSPI": 2,
+        "POPC": 11,
+        "POPS": 4,
+        "SAPI": 2
+      },
+      "lower_ratios": {
+        "POPC": 11,
+        "PSPE": 8,
+        "PSPI": 2,
+        "SAPC": 20,
+        "SAPE": 5,
+        "SAPI": 2,
+        "LPC16": 5,
+        "PLPE": 4,
+        "CHL1": 8,
+        "PLPC": 14,
+        "TSM": 12,
+        "POPI": 5,
+        "POPS": 4
+      },
+      "reference_areas_A2": {
+        "POPC": [
+          61.0,
+          61.0
+        ],
+        "PLPC": [
+          61.2,
+          61.2
+        ],
+        "SAPC": [
+          62.61,
+          62.61
+        ],
+        "PLPE": [
+          60.11,
+          60.11
+        ],
+        "PSPE": [
+          58.4,
+          58.4
+        ],
+        "SAPE": [
+          61.82,
+          61.82
+        ],
+        "PSPI": [
+          58.9,
+          58.9
+        ],
+        "POPI": [
+          59.34,
+          59.34
+        ],
+        "SAPI": [
+          62.87,
+          62.87
+        ],
+        "POPS": [
+          59.59,
+          59.59
+        ],
+        "TSM": [
+          57.35,
+          57.35
+        ],
+        "LPC16": [
+          41.42,
+          41.42
+        ],
+        "CHL1": [
+          28.19,
+          28.19
+        ]
+      },
+      "reference_charges_e": {
+        "POPC": 0.0,
+        "PLPC": 0.0,
+        "SAPC": 0.0,
+        "PLPE": 0.0,
+        "PSPE": 0.0,
+        "SAPE": 0.0,
+        "PSPI": -1.0,
+        "POPI": -1.0,
+        "SAPI": -1.0,
+        "POPS": -1.0,
+        "TSM": 0.0,
+        "LPC16": 0.0,
+        "CHL1": 0.0
+      },
+      "lipid_descriptions": {
+        "POPC": "PC(16:0/18:1(9Z))",
+        "PLPC": "PC(16:0/18:2(9Z,12Z))",
+        "SAPC": "PC(18:0/20:4(5Z,8Z,11Z,14Z))",
+        "PLPE": "PE(16:0/18:2(9Z,12Z))",
+        "PSPE": "PE(16:0/18:0)",
+        "SAPE": "PE(18:0/20:4(5Z,8Z,11Z,14Z))",
+        "PSPI": "PI(16:0/18:0)",
+        "POPI": "PI(16:0/18:1(9Z))",
+        "SAPI": "PI(18:0/20:4(5Z,8Z,11Z,14Z))",
+        "POPS": "PS(16:0/18:1(9Z))",
+        "TSM": "SM(d18:0/22:0)",
+        "LPC16": "PC(16:0/0:0)",
+        "CHL1": "Cholesterol"
+      },
+      "table_reported_totals": [
+        100,
+        100
+      ],
+      "table_row_totals": [
+        100,
+        100
+      ],
+      "table_totals_match": true,
+      "archive_url": "https://www.charmm-gui.org/archive/biomembrane/GOLm/GOLm.tar.gz",
+      "requires_calcium": false,
+      "archive_sha256": "4e3560472c811fd69726244665e65f0d1c450fb8938072fb05b49ea0b9c3dbc4",
+      "published_upper_ratios": {
+        "POPC": 11,
+        "PLPC": 14,
+        "SAPC": 20,
+        "PLPE": 4,
+        "PSPE": 8,
+        "SAPE": 5,
+        "PSPI": 2,
+        "POPI": 5,
+        "SAPI": 2,
+        "POPS": 4,
+        "TSM": 12,
+        "LPC16": 5,
+        "CHL1": 8
+      },
+      "published_lower_ratios": {
+        "POPC": 11,
+        "PLPC": 14,
+        "SAPC": 20,
+        "PLPE": 4,
+        "PSPE": 8,
+        "SAPE": 5,
+        "PSPI": 2,
+        "POPI": 5,
+        "SAPI": 2,
+        "POPS": 4,
+        "TSM": 12,
+        "LPC16": 5,
+        "CHL1": 8
+      },
+      "lipid_aliases": {},
+      "whole_molecule_counts": [
+        {
+          "PLPC": 14,
+          "SAPC": 20,
+          "TSM": 12,
+          "PLPE": 4,
+          "PSPE": 8,
+          "SAPE": 5,
+          "POPI": 5,
+          "LPC16": 5,
+          "CHL1": 8,
+          "PSPI": 2,
+          "POPC": 11,
+          "POPS": 4,
+          "SAPI": 2
+        },
+        {
+          "POPC": 11,
+          "PSPE": 8,
+          "PSPI": 2,
+          "SAPC": 20,
+          "SAPE": 5,
+          "SAPI": 2,
+          "LPC16": 5,
+          "PLPE": 4,
+          "CHL1": 8,
+          "PLPC": 14,
+          "TSM": 12,
+          "POPI": 5,
+          "POPS": 4
+        }
+      ]
+    },
+    {
+      "id": "GOLf",
+      "name": "fungi Golgi membranes",
+      "kind": "biological",
+      "ppm_membrane": "GOL",
+      "temperature_K": 300.0,
+      "reference_box_A": [
+        79.28,
+        79.28,
+        100.0
+      ],
+      "upper_ratios": {
+        "ERG": 12,
+        "POPI": 18,
+        "PYPI": 19,
+        "YOPC": 15,
+        "PYPE": 3,
+        "DYPC": 19,
+        "YOPE": 4,
+        "DYPE": 4,
+        "POPA": 3,
+        "POPS": 3
+      },
+      "lower_ratios": {
+        "DYPE": 4,
+        "POPI": 18,
+        "YOPE": 4,
+        "DYPC": 19,
+        "POPS": 3,
+        "POPA": 3,
+        "YOPC": 15,
+        "ERG": 12,
+        "PYPE": 3,
+        "PYPI": 19
+      },
+      "reference_areas_A2": {
+        "DYPC": [
+          62.0,
+          62.0
+        ],
+        "YOPC": [
+          62.25,
+          62.25
+        ],
+        "DYPE": [
+          60.56,
+          60.56
+        ],
+        "PYPE": [
+          60.21,
+          60.21
+        ],
+        "YOPE": [
+          61.49,
+          61.49
+        ],
+        "POPI": [
+          60.84,
+          60.84
+        ],
+        "PYPI": [
+          61.6,
+          61.6
+        ],
+        "POPS": [
+          60.22,
+          60.22
+        ],
+        "POPA": [
+          59.91,
+          59.91
+        ],
+        "ERG": [
+          30.27,
+          30.27
+        ]
+      },
+      "reference_charges_e": {
+        "DYPC": 0.0,
+        "YOPC": 0.0,
+        "DYPE": 0.0,
+        "PYPE": 0.0,
+        "YOPE": 0.0,
+        "POPI": -1.0,
+        "PYPI": -1.0,
+        "POPS": -1.0,
+        "POPA": -1.0,
+        "ERG": 0.0
+      },
+      "lipid_descriptions": {
+        "DYPC": "PC(16:1(9Z)/16:1(9Z))",
+        "YOPC": "PC(16:1(9Z)/18:1(9Z))",
+        "DYPE": "PE(16:1(9Z)/16:1(9Z))",
+        "PYPE": "PE(16:0/16:1(9Z))",
+        "YOPE": "PE(16:1(9Z)/18:1(9Z))",
+        "POPI": "PI(16:0/18:1(9Z))",
+        "PYPI": "PI(16:0/16:1(9Z))",
+        "POPS": "PS(16:0/18:1(9Z))",
+        "POPA": "PA(16:0/18:1(9Z))",
+        "ERG": "Ergosterol"
+      },
+      "table_reported_totals": [
+        100,
+        100
+      ],
+      "table_row_totals": [
+        100,
+        100
+      ],
+      "table_totals_match": true,
+      "archive_url": "https://www.charmm-gui.org/archive/biomembrane/GOLf/GOLf.tar.gz",
+      "requires_calcium": false,
+      "archive_sha256": "908d9b004ed66c5e47f9c469c91c8fb7f75e6917b6a10c439f89bdf2cca0050b",
+      "published_upper_ratios": {
+        "DYPC": 19,
+        "YOPC": 15,
+        "DYPE": 4,
+        "PYPE": 3,
+        "YOPE": 4,
+        "POPI": 18,
+        "PYPI": 19,
+        "POPS": 3,
+        "POPA": 3,
+        "ERG": 12
+      },
+      "published_lower_ratios": {
+        "DYPC": 19,
+        "YOPC": 15,
+        "DYPE": 4,
+        "PYPE": 3,
+        "YOPE": 4,
+        "POPI": 18,
+        "PYPI": 19,
+        "POPS": 3,
+        "POPA": 3,
+        "ERG": 12
+      },
+      "lipid_aliases": {},
+      "whole_molecule_counts": [
+        {
+          "ERG": 12,
+          "POPI": 18,
+          "PYPI": 19,
+          "YOPC": 15,
+          "PYPE": 3,
+          "DYPC": 19,
+          "YOPE": 4,
+          "DYPE": 4,
+          "POPA": 3,
+          "POPS": 3
+        },
+        {
+          "DYPE": 4,
+          "POPI": 18,
+          "YOPE": 4,
+          "DYPC": 19,
+          "POPS": 3,
+          "POPA": 3,
+          "YOPC": 15,
+          "ERG": 12,
+          "PYPE": 3,
+          "PYPI": 19
+        }
+      ]
+    },
+    {
+      "id": "ENDm",
+      "name": "mammalian endosomal membranes",
+      "kind": "biological",
+      "ppm_membrane": "END",
+      "temperature_K": 310.15,
+      "reference_box_A": [
+        76.06,
+        76.06,
+        100.0
+      ],
+      "upper_ratios": {
+        "CHL1": 32,
+        "SAPC": 17,
+        "SDPC": 6,
+        "PLPE": 2,
+        "SAPI": 6,
+        "OSM": 8,
+        "SAPE": 7,
+        "PLPC": 10,
+        "DSM": 8,
+        "SDPI": 2,
+        "PDOPE": 4
+      },
+      "lower_ratios": {
+        "SAPI": 6,
+        "CHL1": 32,
+        "SAPC": 17,
+        "OSM": 8,
+        "DSM": 8,
+        "SAPE": 7,
+        "PLPC": 10,
+        "PLPE": 2,
+        "PDOPE": 4,
+        "SDPI": 2,
+        "SDPC": 6
+      },
+      "reference_areas_A2": {
+        "PLPC": [
+          58.68,
+          58.68
+        ],
+        "SAPC": [
+          60.64,
+          60.64
+        ],
+        "SDPC": [
+          60.15,
+          60.15
+        ],
+        "PLPE": [
+          57.69,
+          57.69
+        ],
+        "PDPE": [
+          60.01,
+          60.01
+        ],
+        "SAPE": [
+          60.36,
+          60.36
+        ],
+        "SAPI": [
+          60.17,
+          60.17
+        ],
+        "SDPI": [
+          59.78,
+          59.78
+        ],
+        "DSM": [
+          55.75,
+          55.75
+        ],
+        "OSM": [
+          55.76,
+          55.76
+        ],
+        "CHL1": [
+          28.94,
+          28.94
+        ]
+      },
+      "reference_charges_e": {
+        "PLPC": 0.0,
+        "SAPC": 0.0,
+        "SDPC": 0.0,
+        "PLPE": 0.0,
+        "PDPE": 0.0,
+        "SAPE": 0.0,
+        "SAPI": -1.0,
+        "SDPI": -1.0,
+        "DSM": 0.0,
+        "OSM": 0.0,
+        "CHL1": 0.0
+      },
+      "lipid_descriptions": {
+        "PLPC": "PC(16:0/18:2(9Z,12Z))",
+        "SAPC": "PC(18:0/20:4(5Z,8Z,11Z,14Z))",
+        "SDPC": "PC(18:0/22:6(4Z,7Z,10Z,13Z,16Z,19Z))",
+        "PLPE": "PE(16:0/18:2(9Z,12Z))",
+        "PDPE": "PE(16:0/22:6(4Z,7Z,10Z,13Z,16Z,19Z))",
+        "SAPE": "PE(18:0/20:4(5Z,8Z,11Z,14Z))",
+        "SAPI": "PI(18:0/20:4(5Z,8Z,11Z,14Z))",
+        "SDPI": "PI(18:0/22:6(4Z,7Z,10Z,13Z,16Z,19Z))",
+        "DSM": "SM(d18:0/24:0)",
+        "OSM": "SM(d18:1/18:1)",
+        "CHL1": "Cholesterol"
+      },
+      "table_reported_totals": [
+        102,
+        102
+      ],
+      "table_row_totals": [
+        102,
+        102
+      ],
+      "table_totals_match": true,
+      "archive_url": "https://www.charmm-gui.org/archive/biomembrane/ENDm/ENDm.tar.gz",
+      "requires_calcium": false,
+      "archive_sha256": "bbee9f18ed80d6ab7c34bf4783515dc588bf4504c05dfd7f86a4f00f364a2990",
+      "published_upper_ratios": {
+        "PLPC": 10,
+        "SAPC": 17,
+        "SDPC": 6,
+        "PLPE": 2,
+        "PDPE": 4,
+        "SAPE": 7,
+        "SAPI": 6,
+        "SDPI": 2,
+        "DSM": 8,
+        "OSM": 8,
+        "CHL1": 32
+      },
+      "published_lower_ratios": {
+        "PLPC": 10,
+        "SAPC": 17,
+        "SDPC": 6,
+        "PLPE": 2,
+        "PDPE": 4,
+        "SAPE": 7,
+        "SAPI": 6,
+        "SDPI": 2,
+        "DSM": 8,
+        "OSM": 8,
+        "CHL1": 32
+      },
+      "lipid_aliases": {
+        "PDPE": "PDOPE"
+      },
+      "whole_molecule_counts": [
+        {
+          "CHL1": 32,
+          "SAPC": 17,
+          "SDPC": 6,
+          "PLPE": 2,
+          "SAPI": 6,
+          "OSM": 8,
+          "SAPE": 7,
+          "PLPC": 10,
+          "DSM": 8,
+          "SDPI": 2,
+          "PDOPE": 4
+        },
+        {
+          "SAPI": 6,
+          "CHL1": 32,
+          "SAPC": 17,
+          "OSM": 8,
+          "DSM": 8,
+          "SAPE": 7,
+          "PLPC": 10,
+          "PLPE": 2,
+          "PDOPE": 4,
+          "SDPI": 2,
+          "SDPC": 6
+        }
+      ]
+    },
+    {
+      "id": "LYSm",
+      "name": "mammalian lysosomal membranes",
+      "kind": "biological",
+      "ppm_membrane": "LYS",
+      "temperature_K": 310.15,
+      "reference_box_A": [
+        78.93,
+        78.93,
+        100.0
+      ],
+      "upper_ratios": {
+        "PSM": 3,
+        "PLPE": 7,
+        "CHL1": 18,
+        "SDPI": 2,
+        "LSM": 3,
+        "SAPE": 18,
+        "SAPS": 2,
+        "SAPC": 18,
+        "SDPC": 6,
+        "SAPI": 6,
+        "PLPC": 11,
+        "BMGP": 7,
+        "SDPS": 1
+      },
+      "lower_ratios": {
+        "SAPE": 18,
+        "SAPC": 18,
+        "BMGP": 7,
+        "CHL1": 18,
+        "LSM": 3,
+        "SAPS": 2,
+        "PSM": 3,
+        "PLPE": 7,
+        "SDPI": 2,
+        "PLPC": 11,
+        "SDPC": 6,
+        "SAPI": 6,
+        "SDPS": 1
+      },
+      "reference_areas_A2": {
+        "PLPC": [
+          62.43,
+          62.43
+        ],
+        "SAPC": [
+          64.47,
+          64.47
+        ],
+        "SDPC": [
+          63.3,
+          63.3
+        ],
+        "PLPE": [
+          62.01,
+          62.01
+        ],
+        "SAPE": [
+          54.26,
+          54.26
+        ],
+        "SAPI": [
+          63.63,
+          63.63
+        ],
+        "SDPI": [
+          66.0,
+          66.0
+        ],
+        "SAPS": [
+          65.98,
+          65.98
+        ],
+        "SDPS": [
+          61.05,
+          61.05
+        ],
+        "PSM": [
+          59.53,
+          59.53
+        ],
+        "LSM": [
+          56.65,
+          56.65
+        ],
+        "CHL1": [
+          30.68,
+          30.68
+        ],
+        "BMP": [
+          76.13,
+          76.13
+        ]
+      },
+      "reference_charges_e": {
+        "PLPC": 0.0,
+        "SAPC": 0.0,
+        "SDPC": 0.0,
+        "PLPE": 0.0,
+        "SAPE": 0.0,
+        "SAPI": -1.0,
+        "SDPI": -1.0,
+        "SAPS": -1.0,
+        "SDPS": -1.0,
+        "PSM": 0.0,
+        "LSM": 0.0,
+        "CHL1": 0.0,
+        "BMP": -1.0
+      },
+      "lipid_descriptions": {
+        "PLPC": "PC(16:0/18:2(9Z,12Z))",
+        "SAPC": "PC(18:0/20:4(5Z,8Z,11Z,14Z))",
+        "SDPC": "PC(18:0/22:6(4Z,7Z,10Z,13Z,16Z,19Z))",
+        "PLPE": "PE(16:0/18:2(9Z,12Z))",
+        "SAPE": "PE(18:0/20:4(5Z,8Z,11Z,14Z))",
+        "SAPI": "PI(18:0/20:4(5Z,8Z,11Z,14Z))",
+        "SDPI": "PI(18:0/22:6(4Z,7Z,10Z,13Z,16Z,19Z))",
+        "SAPS": "PS(18:0/20:4(5Z,8Z,11Z,14Z))",
+        "SDPS": "PS(18:0/22:6(4Z,7Z,10Z,13Z,16Z,19Z))",
+        "PSM": "SM(d18:1/16:0)",
+        "LSM": "SM(d18:1/24:0)",
+        "CHL1": "Cholesterol",
+        "BMP": "BMP(18:1(9Z)/18:1(9Z))"
+      },
+      "table_reported_totals": [
+        102,
+        102
+      ],
+      "table_row_totals": [
+        102,
+        102
+      ],
+      "table_totals_match": true,
+      "archive_url": "https://www.charmm-gui.org/archive/biomembrane/LYSm/LYSm.tar.gz",
+      "requires_calcium": false,
+      "archive_sha256": "ba3e1d493b843db500f6a41066fa2cfe5acd0760ffea73570ea7e6126a4bda55",
+      "published_upper_ratios": {
+        "PLPC": 11,
+        "SAPC": 18,
+        "SDPC": 6,
+        "PLPE": 7,
+        "SAPE": 18,
+        "SAPI": 6,
+        "SDPI": 2,
+        "SAPS": 2,
+        "SDPS": 1,
+        "PSM": 3,
+        "LSM": 3,
+        "CHL1": 18,
+        "BMP": 7
+      },
+      "published_lower_ratios": {
+        "PLPC": 11,
+        "SAPC": 18,
+        "SDPC": 6,
+        "PLPE": 7,
+        "SAPE": 18,
+        "SAPI": 6,
+        "SDPI": 2,
+        "SAPS": 2,
+        "SDPS": 1,
+        "PSM": 3,
+        "LSM": 3,
+        "CHL1": 18,
+        "BMP": 7
+      },
+      "lipid_aliases": {
+        "BMP": "BMGP"
+      },
+      "whole_molecule_counts": [
+        {
+          "PSM": 3,
+          "PLPE": 7,
+          "CHL1": 18,
+          "SDPI": 2,
+          "LSM": 3,
+          "SAPE": 18,
+          "SAPS": 2,
+          "SAPC": 18,
+          "SDPC": 6,
+          "SAPI": 6,
+          "PLPC": 11,
+          "BMGP": 7,
+          "SDPS": 1
+        },
+        {
+          "SAPE": 18,
+          "SAPC": 18,
+          "BMGP": 7,
+          "CHL1": 18,
+          "LSM": 3,
+          "SAPS": 2,
+          "PSM": 3,
+          "PLPE": 7,
+          "SDPI": 2,
+          "PLPC": 11,
+          "SDPC": 6,
+          "SAPI": 6,
+          "SDPS": 1
+        }
+      ]
+    },
+    {
+      "id": "VAC",
+      "name": "membranes of plant vacuoles",
+      "kind": "biological",
+      "ppm_membrane": "VAC",
+      "temperature_K": 300.0,
+      "reference_box_A": [
+        79.56,
+        79.56,
+        114.21
+      ],
+      "upper_ratios": {
+        "GLCCER": 13,
+        "MGDGDL": 2,
+        "DGDGDL": 3,
+        "SQDGDL": 2,
+        "STIG": 5,
+        "DPPE": 11,
+        "PGSITO": 6,
+        "CAMP": 5,
+        "PGCAMP": 6,
+        "DPPI": 5,
+        "DUPC": 6,
+        "DLIPE": 4,
+        "GSTIG": 6,
+        "GCAMP": 6,
+        "PLPI": 2,
+        "GSITO": 6,
+        "DPPC": 3,
+        "PGSTIG": 6,
+        "LLPE": 6,
+        "DPPG": 1,
+        "SITO": 5,
+        "PLPC": 5,
+        "PLPS": 1
+      },
+      "lower_ratios": {
+        "GLCCER": 13,
+        "MGDGDL": 2,
+        "SQDGDL": 2,
+        "DGDGDL": 3,
+        "STIG": 5,
+        "GCAMP": 6,
+        "DUPC": 6,
+        "PGCAMP": 6,
+        "DPPE": 11,
+        "PLPC": 5,
+        "GSTIG": 6,
+        "DPPI": 5,
+        "PLPI": 2,
+        "PGSTIG": 6,
+        "PGSITO": 6,
+        "DLIPE": 4,
+        "LLPE": 6,
+        "CAMP": 5,
+        "DPPG": 1,
+        "GSITO": 6,
+        "SITO": 5,
+        "DPPC": 3,
+        "PLPS": 1
+      },
+      "reference_areas_A2": {
+        "DLIPE": [
+          62.62,
+          62.62
+        ],
+        "DPPE": [
+          58.69,
+          58.69
+        ],
+        "LLPE": [
+          62.81,
+          62.81
+        ],
+        "DPPC": [
+          63.04,
+          63.04
+        ],
+        "DUPC": [
+          61.36,
+          61.36
+        ],
+        "PLPC": [
+          58.74,
+          58.74
+        ],
+        "DPPI": [
+          62.3,
+          62.3
+        ],
+        "PLPI": [
+          60.66,
+          60.66
+        ],
+        "PLPS": [
+          56.19,
+          56.19
+        ],
+        "DPPG": [
+          66.43,
+          66.43
+        ],
+        "CMH": [
+          36.91,
+          36.91
+        ],
+        "GSITO": [
+          37.1,
+          37.1
+        ],
+        "GCAMP": [
+          36.08,
+          36.08
+        ],
+        "GSTIG": [
+          38.17,
+          38.17
+        ],
+        "PGCAMP": [
+          32.96,
+          32.96
+        ],
+        "PGSITO": [
+          27.62,
+          27.62
+        ],
+        "PGSTIG": [
+          63.36,
+          63.36
+        ],
+        "DGDG": [
+          53.04,
+          53.04
+        ],
+        "MGDG": [
+          36.43,
+          36.43
+        ],
+        "SQDG": [
+          31.77,
+          31.77
+        ],
+        "CAMP": [
+          32.18,
+          32.18
+        ],
+        "STIG": [
+          33.8,
+          33.8
+        ],
+        "SITO": [
+          32.7,
+          32.7
+        ]
+      },
+      "reference_charges_e": {
+        "DLIPE": 0.0,
+        "DPPE": 0.0,
+        "LLPE": 0.0,
+        "DPPC": 0.0,
+        "DUPC": 0.0,
+        "PLPC": 0.0,
+        "DPPI": -1.0,
+        "PLPI": -1.0,
+        "PLPS": -1.0,
+        "DPPG": -1.0,
+        "CMH": 0.0,
+        "GSITO": 0.0,
+        "GCAMP": 0.0,
+        "GSTIG": 0.0,
+        "PGCAMP": 0.0,
+        "PGSITO": 0.0,
+        "PGSTIG": 0.0,
+        "DGDG": 0.0,
+        "MGDG": 0.0,
+        "SQDG": -1.0,
+        "CAMP": 0.0,
+        "STIG": 0.0,
+        "SITO": 0.0
+      },
+      "lipid_descriptions": {
+        "DLIPE": "PE(18:2(9Z,12Z)/18:2(9Z,12Z))",
+        "DPPE": "PE(16:0/16:0)",
+        "LLPE": "PE(18:2(9Z,12Z)/18:3(9Z, 12Z, 15Z))",
+        "DPPC": "PC(16:0/16:0)",
+        "DUPC": "PC(18:2(9Z,12Z)/18:2(9Z,12Z))",
+        "PLPC": "PC(16:0/18:2(9Z,12Z))",
+        "DPPI": "PI(16:0/16:0)",
+        "PLPI": "PI(16:0/18:2(9Z,12Z))",
+        "PLPS": "PS(16:0/18:2(9Z,12Z))",
+        "DPPG": "PG(16:0/16:0)",
+        "CMH": "GlcCer(d18:1/16:0)",
+        "GSITO": "Sitosteryl glucoside",
+        "GCAMP": "Campesteryl glucoside",
+        "GSTIG": "Stigmasterylglucoside",
+        "PGCAMP": "Palmitoyl Campesteryl Glucoside(16:0)",
+        "PGSITO": "Palmitoyl Sitosteryl Glucoside(16:0)",
+        "PGSTIG": "Palmitoyl Stigmasteryl Glucoside(16:0)",
+        "DGDG": "DGDG(12:0/12:0)",
+        "MGDG": "MGDG(12:0/12:0)",
+        "SQDG": "SGDG(12:0/12:0)",
+        "CAMP": "Campesterol",
+        "STIG": "Stigmasterol",
+        "SITO": "\u03b2-Sitosterol"
+      },
+      "table_reported_totals": [
+        115,
+        115
+      ],
+      "table_row_totals": [
+        115,
+        115
+      ],
+      "table_totals_match": true,
+      "archive_url": "https://www.charmm-gui.org/archive/biomembrane/VAC/VAC.tar.gz",
+      "requires_calcium": false,
+      "archive_sha256": "7ff0d949270d1d7f5496e1e68bdd330196f67040186f7116c7af68ef7f0c490c",
+      "published_upper_ratios": {
+        "DLIPE": 4,
+        "DPPE": 11,
+        "LLPE": 6,
+        "DPPC": 3,
+        "DUPC": 6,
+        "PLPC": 5,
+        "DPPI": 5,
+        "PLPI": 2,
+        "PLPS": 1,
+        "DPPG": 1,
+        "CMH": 13,
+        "GSITO": 6,
+        "GCAMP": 6,
+        "GSTIG": 6,
+        "PGCAMP": 6,
+        "PGSITO": 6,
+        "PGSTIG": 6,
+        "DGDG": 3,
+        "MGDG": 2,
+        "SQDG": 2,
+        "CAMP": 5,
+        "STIG": 5,
+        "SITO": 5
+      },
+      "published_lower_ratios": {
+        "DLIPE": 4,
+        "DPPE": 11,
+        "LLPE": 6,
+        "DPPC": 3,
+        "DUPC": 6,
+        "PLPC": 5,
+        "DPPI": 5,
+        "PLPI": 2,
+        "PLPS": 1,
+        "DPPG": 1,
+        "CMH": 13,
+        "GSITO": 6,
+        "GCAMP": 6,
+        "GSTIG": 6,
+        "PGCAMP": 6,
+        "PGSITO": 6,
+        "PGSTIG": 6,
+        "DGDG": 3,
+        "MGDG": 2,
+        "SQDG": 2,
+        "CAMP": 5,
+        "STIG": 5,
+        "SITO": 5
+      },
+      "lipid_aliases": {
+        "CMH": "GLCCER",
+        "DGDG": "DGDGDL",
+        "MGDG": "MGDGDL",
+        "SQDG": "SQDGDL"
+      },
+      "whole_molecule_counts": [
+        {
+          "GLCCER": 13,
+          "MGDGDL": 2,
+          "DGDGDL": 3,
+          "SQDGDL": 2,
+          "STIG": 5,
+          "DPPE": 11,
+          "PGSITO": 6,
+          "CAMP": 5,
+          "PGCAMP": 6,
+          "DPPI": 5,
+          "DUPC": 6,
+          "DLIPE": 4,
+          "GSTIG": 6,
+          "GCAMP": 6,
+          "PLPI": 2,
+          "GSITO": 6,
+          "DPPC": 3,
+          "PGSTIG": 6,
+          "LLPE": 6,
+          "DPPG": 1,
+          "SITO": 5,
+          "PLPC": 5,
+          "PLPS": 1
+        },
+        {
+          "GLCCER": 13,
+          "MGDGDL": 2,
+          "SQDGDL": 2,
+          "DGDGDL": 3,
+          "STIG": 5,
+          "GCAMP": 6,
+          "DUPC": 6,
+          "PGCAMP": 6,
+          "DPPE": 11,
+          "PLPC": 5,
+          "GSTIG": 6,
+          "DPPI": 5,
+          "PLPI": 2,
+          "PGSTIG": 6,
+          "PGSITO": 6,
+          "DLIPE": 4,
+          "LLPE": 6,
+          "CAMP": 5,
+          "DPPG": 1,
+          "GSITO": 6,
+          "SITO": 5,
+          "DPPC": 3,
+          "PLPS": 1
+        }
+      ]
+    },
+    {
+      "id": "MOM",
+      "name": "mitochondrial outer membranes",
+      "kind": "biological",
+      "ppm_membrane": "MOM",
+      "temperature_K": 310.15,
+      "reference_box_A": [
+        82.13,
+        82.13,
+        100.0
+      ],
+      "upper_ratios": {
+        "SAPE": 25,
+        "PLPC": 18,
+        "SAPC": 30,
+        "PLPE": 9,
+        "SAPI": 4,
+        "POPC": 6,
+        "POPE": 4,
+        "POPA": 1,
+        "SAPS": 1,
+        "TLCL1": 2
+      },
+      "lower_ratios": {
+        "SAPC": 30,
+        "PLPC": 18,
+        "SAPE": 13,
+        "POPC": 6,
+        "SAPS": 3,
+        "SAPI": 22,
+        "POPE": 2,
+        "PLPE": 5,
+        "POPA": 1
+      },
+      "reference_areas_A2": {
+        "POPC": [
+          64.78,
+          65.95
+        ],
+        "PLPC": [
+          64.93,
+          66.23
+        ],
+        "SAPC": [
+          66.32,
+          67.28
+        ],
+        "POPE": [
+          63.5,
+          64.08
+        ],
+        "PLPE": [
+          63.68,
+          65.11
+        ],
+        "SAPE": [
+          64.9,
+          66.26
+        ],
+        "SAPI": [
+          65.58,
+          66.87
+        ],
+        "SAPS": [
+          64.23,
+          66.59
+        ],
+        "POPA": [
+          62.11,
+          64.62
+        ],
+        "TLCL1": [
+          135.71,
+          null
+        ]
+      },
+      "reference_charges_e": {
+        "POPC": 0.0,
+        "PLPC": 0.0,
+        "SAPC": 0.0,
+        "POPE": 0.0,
+        "PLPE": 0.0,
+        "SAPE": 0.0,
+        "SAPI": -1.0,
+        "SAPS": -1.0,
+        "POPA": -1.0,
+        "TLCL1": -1.0
+      },
+      "lipid_descriptions": {
+        "POPC": "PC(16:0/18:1(9Z))",
+        "PLPC": "PC(16:0/18:2(9Z, 12Z))",
+        "SAPC": "PC(18:0/20:4(5Z,8Z,11Z, 14Z))",
+        "POPE": "PE(16:0/18:1(9Z))",
+        "PLPE": "PE(16:0/18:2(9Z, 12Z))",
+        "SAPE": "PE(18:0/20:4(5Z,8Z,11Z, 14Z))",
+        "SAPI": "PI(18:0/20:4(5Z,8Z,11Z, 14Z))",
+        "SAPS": "PS(18:0/20:4(5Z,8Z,11Z, 14Z))",
+        "POPA": "PA(16:0/18:1(9Z))",
+        "TLCL1": "CL(1'-[18:2(9Z,12Z)/18:2(9Z,12Z)],3'-[18:2(9Z,12Z)/18:2(9Z,12Z)])"
+      },
+      "table_reported_totals": [
+        100,
+        100
+      ],
+      "table_row_totals": [
+        100,
+        100
+      ],
+      "table_totals_match": true,
+      "archive_url": "https://www.charmm-gui.org/archive/biomembrane/MOM/MOM.tar.gz",
+      "requires_calcium": false,
+      "archive_sha256": "0ab05016db8ad41a236b0ab62d7a1a0e57172b8d335978522211378c4aeac64f",
+      "published_upper_ratios": {
+        "POPC": 6,
+        "PLPC": 18,
+        "SAPC": 30,
+        "POPE": 4,
+        "PLPE": 9,
+        "SAPE": 25,
+        "SAPI": 4,
+        "SAPS": 1,
+        "POPA": 1,
+        "TLCL1": 2
+      },
+      "published_lower_ratios": {
+        "POPC": 6,
+        "PLPC": 18,
+        "SAPC": 30,
+        "POPE": 2,
+        "PLPE": 5,
+        "SAPE": 13,
+        "SAPI": 22,
+        "SAPS": 3,
+        "POPA": 1
+      },
+      "lipid_aliases": {},
+      "whole_molecule_counts": [
+        {
+          "SAPE": 25,
+          "PLPC": 18,
+          "SAPC": 30,
+          "PLPE": 9,
+          "SAPI": 4,
+          "POPC": 6,
+          "POPE": 4,
+          "POPA": 1,
+          "SAPS": 1,
+          "TLCL1": 2
+        },
+        {
+          "SAPC": 30,
+          "PLPC": 18,
+          "SAPE": 13,
+          "POPC": 6,
+          "SAPS": 3,
+          "SAPI": 22,
+          "POPE": 2,
+          "PLPE": 5,
+          "POPA": 1
+        }
+      ]
+    },
+    {
+      "id": "MIM",
+      "name": "mitochondrial inner membranes",
+      "kind": "biological",
+      "ppm_membrane": "MIM",
+      "temperature_K": 310.15,
+      "reference_box_A": [
+        90.54,
+        90.54,
+        100.0
+      ],
+      "upper_ratios": {
+        "PLPE": 8,
+        "PLPC": 19,
+        "SAPI": 5,
+        "TLCL1": 11,
+        "SAPE": 24,
+        "POPC": 7,
+        "SAPC": 32,
+        "POPE": 5,
+        "SAPS": 3
+      },
+      "lower_ratios": {
+        "TLCL1": 26,
+        "SAPE": 24,
+        "PLPE": 8,
+        "PLPC": 10,
+        "SAPC": 16,
+        "POPE": 4,
+        "SAPS": 3,
+        "SAPI": 6,
+        "POPC": 3
+      },
+      "reference_areas_A2": {
+        "POPC": [
+          64.29,
+          62.91
+        ],
+        "PLPC": [
+          64.69,
+          63.37
+        ],
+        "SAPC": [
+          65.9,
+          64.09
+        ],
+        "POPE": [
+          63.41,
+          61.94
+        ],
+        "PLPE": [
+          63.2,
+          62.78
+        ],
+        "SAPE": [
+          64.74,
+          63.49
+        ],
+        "SAPI": [
+          64.95,
+          64.1
+        ],
+        "SAPS": [
+          64.47,
+          63.7
+        ],
+        "TLCL1": [
+          134.35,
+          133.2
+        ]
+      },
+      "reference_charges_e": {
+        "POPC": 0.0,
+        "PLPC": 0.0,
+        "SAPC": 0.0,
+        "POPE": 0.0,
+        "PLPE": 0.0,
+        "SAPE": 0.0,
+        "SAPI": -1.0,
+        "SAPS": -1.0,
+        "TLCL1": -1.0
+      },
+      "lipid_descriptions": {
+        "POPC": "PC(16:0/18:1(9Z))",
+        "PLPC": "PC(16:0/18:2(9Z, 12Z))",
+        "SAPC": "PC(18:0/20:4(5Z,8Z,11Z, 14Z))",
+        "POPE": "PE(16:0/18:1(9Z))",
+        "PLPE": "PE(16:0/18:2(9Z, 12Z))",
+        "SAPE": "PE(18:0/20:4(5Z,8Z,11Z, 14Z))",
+        "SAPI": "PI(18:0/20:4(5Z,8Z,11Z, 14Z))",
+        "SAPS": "PS(18:0/20:4(5Z,8Z,11Z, 14Z))",
+        "TLCL1": "CL(1'-[18:2(9Z,12Z)/18:2(9Z,12Z)],3'-[18:2(9Z,12Z)/18:2(9Z,12Z)])"
+      },
+      "table_reported_totals": [
+        114,
+        100
+      ],
+      "table_row_totals": [
+        114,
+        100
+      ],
+      "table_totals_match": true,
+      "archive_url": "https://www.charmm-gui.org/archive/biomembrane/MIM/MIM.tar.gz",
+      "requires_calcium": false,
+      "archive_sha256": "39a6b11ef94510b17540c254c4431d4f1c0a4eec91bb03d83f24e851dfdbdc1a",
+      "published_upper_ratios": {
+        "POPC": 7,
+        "PLPC": 19,
+        "SAPC": 32,
+        "POPE": 5,
+        "PLPE": 8,
+        "SAPE": 24,
+        "SAPI": 5,
+        "SAPS": 3,
+        "TLCL1": 11
+      },
+      "published_lower_ratios": {
+        "POPC": 3,
+        "PLPC": 10,
+        "SAPC": 16,
+        "POPE": 4,
+        "PLPE": 8,
+        "SAPE": 24,
+        "SAPI": 6,
+        "SAPS": 3,
+        "TLCL1": 26
+      },
+      "lipid_aliases": {},
+      "whole_molecule_counts": [
+        {
+          "PLPE": 8,
+          "PLPC": 19,
+          "SAPI": 5,
+          "TLCL1": 11,
+          "SAPE": 24,
+          "POPC": 7,
+          "SAPC": 32,
+          "POPE": 5,
+          "SAPS": 3
+        },
+        {
+          "TLCL1": 26,
+          "SAPE": 24,
+          "PLPE": 8,
+          "PLPC": 10,
+          "SAPC": 16,
+          "POPE": 4,
+          "SAPS": 3,
+          "SAPI": 6,
+          "POPC": 3
+        }
+      ]
+    },
+    {
+      "id": "THYp",
+      "name": "thylakoid membranes from plants",
+      "kind": "biological",
+      "ppm_membrane": "THp",
+      "temperature_K": 298.15,
+      "reference_box_A": [
+        77.46,
+        77.46,
+        119.93
+      ],
+      "upper_ratios": {
+        "DGDGLI": 25,
+        "MGDGLI": 35,
+        "DGDGPL": 5,
+        "SQDGPL": 15,
+        "MGDGPL": 5,
+        "YPPG": 5,
+        "YLIPG": 10
+      },
+      "lower_ratios": {
+        "SQDGPL": 15,
+        "MGDGLI": 35,
+        "MGDGPL": 5,
+        "DGDGLI": 25,
+        "DGDGPL": 5,
+        "YLIPG": 10,
+        "YPPG": 5
+      },
+      "reference_areas_A2": {
+        "YPPG": [
+          91.53,
+          91.53
+        ],
+        "YLIPG": [
+          92.55,
+          92.55
+        ],
+        "DGDG-PLE": [
+          61.42,
+          61.42
+        ],
+        "DGDG-DLI": [
+          63.92,
+          63.92
+        ],
+        "MGDG-PLE": [
+          60.81,
+          60.81
+        ],
+        "MGDG-DLI": [
+          59.1,
+          59.1
+        ],
+        "SQDG-PLE": [
+          59.31,
+          59.31
+        ]
+      },
+      "reference_charges_e": {
+        "YPPG": -1.0,
+        "YLIPG": -1.0,
+        "DGDG-PLE": 0.0,
+        "DGDG-DLI": 0.0,
+        "MGDG-PLE": 0.0,
+        "MGDG-DLI": 0.0,
+        "SQDG-PLE": -1.0
+      },
+      "lipid_descriptions": {
+        "YPPG": "PG (16:1(3E)/16:0)",
+        "YLIPG": "PG(16:1(3E)/18:3(9Z, 12Z, 15Z))",
+        "DGDG-PLE": "DGDG(16:0/18:3(9Z, 12Z, 15Z))",
+        "DGDG-DLI": "DGDG(18:3(9Z, 12Z, 15Z)/18:3(9Z, 12Z, 15Z))",
+        "MGDG-PLE": "MGDG(16:0/18:3(9Z, 12Z, 15Z))",
+        "MGDG-DLI": "MGDG(18:3(9Z, 12Z, 15Z)/18:3(9Z, 12Z, 15Z))",
+        "SQDG-PLE": "SQDG(16:0/18:3(9Z, 12Z, 15Z))"
+      },
+      "table_reported_totals": [
+        100,
+        100
+      ],
+      "table_row_totals": [
+        100,
+        100
+      ],
+      "table_totals_match": true,
+      "archive_url": "https://www.charmm-gui.org/archive/biomembrane/THYp/THYp.tar.gz",
+      "requires_calcium": false,
+      "archive_sha256": "8f7656cc063cded9cbd4c8af589561eb6e11496529da040d1c2f1213658ab23a",
+      "published_upper_ratios": {
+        "YPPG": 5,
+        "YLIPG": 10,
+        "DGDG-PLE": 5,
+        "DGDG-DLI": 25,
+        "MGDG-PLE": 5,
+        "MGDG-DLI": 35,
+        "SQDG-PLE": 15
+      },
+      "published_lower_ratios": {
+        "YPPG": 5,
+        "YLIPG": 10,
+        "DGDG-PLE": 5,
+        "DGDG-DLI": 25,
+        "MGDG-PLE": 5,
+        "MGDG-DLI": 35,
+        "SQDG-PLE": 15
+      },
+      "lipid_aliases": {
+        "DGDG-PLE": "DGDGPL",
+        "DGDG-DLI": "DGDGLI",
+        "MGDG-PLE": "MGDGPL",
+        "MGDG-DLI": "MGDGLI",
+        "SQDG-PLE": "SQDGPL"
+      },
+      "whole_molecule_counts": [
+        {
+          "DGDGLI": 25,
+          "MGDGLI": 35,
+          "DGDGPL": 5,
+          "SQDGPL": 15,
+          "MGDGPL": 5,
+          "YPPG": 5,
+          "YLIPG": 10
+        },
+        {
+          "SQDGPL": 15,
+          "MGDGLI": 35,
+          "MGDGPL": 5,
+          "DGDGLI": 25,
+          "DGDGPL": 5,
+          "YLIPG": 10,
+          "YPPG": 5
+        }
+      ]
+    },
+    {
+      "id": "THYb",
+      "name": "thylakoid membranes from eubacteria",
+      "kind": "biological",
+      "ppm_membrane": "THb",
+      "temperature_K": 328.0,
+      "reference_box_A": [
+        80.31,
+        80.31,
+        117.85
+      ],
+      "upper_ratios": {
+        "DGDGPO": 25,
+        "SQDGDP": 15,
+        "MGDGPO": 40,
+        "SQDGPO": 10,
+        "OPPG": 10
+      },
+      "lower_ratios": {
+        "DGDGPO": 25,
+        "MGDGPO": 40,
+        "SQDGDP": 15,
+        "SQDGPO": 10,
+        "OPPG": 10
+      },
+      "reference_areas_A2": {
+        "OPPG": [
+          84.14,
+          84.14
+        ],
+        "DGDG-PO": [
+          73.98,
+          73.98
+        ],
+        "MGDG-PO": [
+          50.89,
+          50.89
+        ],
+        "SQDG-PO": [
+          53.1,
+          53.1
+        ],
+        "SQDG-DP": [
+          71.94,
+          71.94
+        ]
+      },
+      "reference_charges_e": {
+        "OPPG": -1.0,
+        "DGDG-PO": 0.0,
+        "MGDG-PO": 0.0,
+        "SQDG-PO": -1.0,
+        "SQDG-DP": -1.0
+      },
+      "lipid_descriptions": {
+        "OPPG": "PG(18:1(9Z)/16:0)",
+        "DGDG-PO": "DGDG(16:0/18:1(9Z))",
+        "MGDG-PO": "MGDG(16:0/18:1(9Z))",
+        "SQDG-PO": "SQDG(16:0/18:1(9Z))",
+        "SQDG-DP": "SQDG(16:0/16:0)"
+      },
+      "table_reported_totals": [
+        100,
+        100
+      ],
+      "table_row_totals": [
+        105,
+        105
+      ],
+      "table_totals_match": false,
+      "archive_url": "https://www.charmm-gui.org/archive/biomembrane/THYb/THYb.tar.gz",
+      "requires_calcium": false,
+      "archive_sha256": "176efcd7700678d4676223d9a0491ce3eb360a19532ef47e5ef14e29fefb38e9",
+      "source_discrepancies": [
+        "The HTML table reports 45 MGDG-PO per leaflet and a total of 100, but its rows sum to 105. The reference PSF/CRD contains 40 MGDG-PO and 100 whole molecules per leaflet. The preset retains the reference inventory."
+      ],
+      "published_upper_ratios": {
+        "OPPG": 10,
+        "DGDG-PO": 25,
+        "MGDG-PO": 45,
+        "SQDG-PO": 10,
+        "SQDG-DP": 15
+      },
+      "published_lower_ratios": {
+        "OPPG": 10,
+        "DGDG-PO": 25,
+        "MGDG-PO": 45,
+        "SQDG-PO": 10,
+        "SQDG-DP": 15
+      },
+      "lipid_aliases": {
+        "DGDG-PO": "DGDGPO",
+        "MGDG-PO": "MGDGPO",
+        "SQDG-PO": "SQDGPO",
+        "SQDG-DP": "SQDGDP"
+      },
+      "whole_molecule_counts": [
+        {
+          "DGDGPO": 25,
+          "SQDGDP": 15,
+          "MGDGPO": 40,
+          "SQDGPO": 10,
+          "OPPG": 10
+        },
+        {
+          "DGDGPO": 25,
+          "MGDGPO": 40,
+          "SQDGDP": 15,
+          "SQDGPO": 10,
+          "OPPG": 10
+        }
+      ]
+    },
+    {
+      "id": "aPM",
+      "name": "archaebacterial cell membranes",
+      "kind": "biological",
+      "ppm_membrane": "ARC",
+      "temperature_K": 310.15,
+      "reference_box_A": [
+        81.04,
+        81.04,
+        100.0
+      ],
+      "upper_ratios": {
+        "PGMAR": 17,
+        "PGAR": 47,
+        "MEN8": 21,
+        "AROL": 8,
+        "ARCL2": 7
+      },
+      "lower_ratios": {
+        "PGMAR": 17,
+        "PGAR": 47,
+        "AROL": 8,
+        "MEN8": 21,
+        "ARCL2": 7
+      },
+      "reference_areas_A2": {
+        "PGAR": [
+          74.45,
+          74.45
+        ],
+        "PGMAR": [
+          74.29,
+          74.29
+        ],
+        "ARCL2": [
+          145.74,
+          145.74
+        ],
+        "AROL": [
+          58.11,
+          58.11
+        ],
+        "MEN8": [
+          29.26,
+          29.26
+        ]
+      },
+      "reference_charges_e": {
+        "PGAR": -1.0,
+        "PGMAR": -2.0,
+        "ARCL2": -2.0,
+        "AROL": 0.0,
+        "MEN8": 0.0
+      },
+      "lipid_descriptions": {
+        "PGAR": "PG-AR",
+        "PGMAR": "PGP-MeAR",
+        "ARCL2": "BPG(C25,C20,C25,C20)",
+        "AROL": "Core-AR (Archaeol)",
+        "MEN8": "Menaquinone-8"
+      },
+      "table_reported_totals": [
+        100,
+        100
+      ],
+      "table_row_totals": [
+        100,
+        100
+      ],
+      "table_totals_match": true,
+      "archive_url": "https://www.charmm-gui.org/archive/biomembrane/aPM/aPM.tar.gz",
+      "requires_calcium": false,
+      "archive_sha256": "e21ed670ae225ae32dcb5a95366401c267318c19ad38ccfcad6a17f7d21ce95b",
+      "published_upper_ratios": {
+        "PGAR": 47,
+        "PGMAR": 17,
+        "ARCL2": 7,
+        "AROL": 8,
+        "MEN8": 21
+      },
+      "published_lower_ratios": {
+        "PGAR": 47,
+        "PGMAR": 17,
+        "ARCL2": 7,
+        "AROL": 8,
+        "MEN8": 21
+      },
+      "lipid_aliases": {},
+      "whole_molecule_counts": [
+        {
+          "PGMAR": 17,
+          "PGAR": 47,
+          "MEN8": 21,
+          "AROL": 8,
+          "ARCL2": 7
+        },
+        {
+          "PGMAR": 17,
+          "PGAR": 47,
+          "AROL": 8,
+          "MEN8": 21,
+          "ARCL2": 7
+        }
+      ],
+      "head_offsets_A": {
+        "PGMAR": -1.0,
+        "PGAR": -2.0,
+        "MEN8": -2.0,
+        "AROL": -4.0,
+        "ARCL2": -1.0
+      },
+      "head_offsets_source": "membrane_restraint.str, relative to the POPC head plane",
+      "packing_warning": "aPM reference-density packing remains experimental. Strict packing has not passed. Do not treat this preset as a validated preparation."
+    },
+    {
+      "id": "G-OM",
+      "name": "outer membranes of Gram-negative bacteria",
+      "kind": "biological",
+      "ppm_membrane": "GnO",
+      "temperature_K": 310.15,
+      "reference_box_A": [
+        81.44,
+        81.44,
+        129.69
+      ],
+      "upper_ratios": {
+        "ECLIPA": 35
+      },
+      "lower_ratios": {
+        "PPPE": 75,
+        "PVPG": 20,
+        "PVCL2": 5
+      },
+      "reference_areas_A2": {
+        "ECLIPA": [
+          183.0,
+          null
+        ],
+        "PPPE": [
+          null,
+          60.54
+        ],
+        "PVPG": [
+          null,
+          62.1
+        ],
+        "PVCL2": [
+          null,
+          124.47
+        ]
+      },
+      "reference_charges_e": {
+        "ECLIPA": -10.0,
+        "PPPE": 0.0,
+        "PVPG": -1.0,
+        "PVCL2": -2.0
+      },
+      "lipid_descriptions": {
+        "ECLIPA": "E.coli R1 core-Lipid A*",
+        "PPPE": "PE (16:0/16:1 (9Z))",
+        "PVPG": "PG(16:0/18:1(11Z))",
+        "PVCL2": "CL(1'-[16:0/18:1(11Z)],3'-[16:0/18:1(11Z)])"
+      },
+      "table_reported_totals": [
+        35,
+        100
+      ],
+      "table_row_totals": [
+        35,
+        100
+      ],
+      "table_totals_match": true,
+      "archive_url": "https://www.charmm-gui.org/archive/biomembrane/G-OM/G-OM.tar.gz",
+      "requires_calcium": true,
+      "archive_sha256": "ed6c1e094e08bdb390ecd3049032d0e8a594c9605f4ee166568d79d97182bfc6",
+      "published_upper_ratios": {
+        "ECLIPA": 35
+      },
+      "published_lower_ratios": {
+        "PPPE": 75,
+        "PVPG": 20,
+        "PVCL2": 5
+      },
+      "lipid_aliases": {},
+      "whole_molecule_counts": [
+        {
+          "ECLIPA": 35
+        },
+        {
+          "PPPE": 75,
+          "PVPG": 20,
+          "PVCL2": 5
+        }
+      ]
+    },
+    {
+      "id": "G-IM",
+      "name": "inner membranes of Gram-negative bacteria",
+      "kind": "biological",
+      "ppm_membrane": "GnI",
+      "temperature_K": 310.15,
+      "reference_box_A": [
+        79.79,
+        79.79,
+        100.0
+      ],
+      "upper_ratios": {
+        "QMPE": 12,
+        "PMPE": 46,
+        "PYPG": 9,
+        "PMPG": 10,
+        "POPE": 13,
+        "OYPE": 8,
+        "PVCL2": 2
+      },
+      "lower_ratios": {
+        "PMPG": 10,
+        "POPE": 13,
+        "PMPE": 46,
+        "QMPE": 12,
+        "OYPE": 8,
+        "PVCL2": 2,
+        "PYPG": 9
+      },
+      "reference_areas_A2": {
+        "PMPE": [
+          62.25,
+          62.25
+        ],
+        "POPE": [
+          62.18,
+          62.18
+        ],
+        "QMPE": [
+          62.19,
+          62.19
+        ],
+        "OYPE": [
+          62.35,
+          62.35
+        ],
+        "PMPG": [
+          64.22,
+          64.22
+        ],
+        "PYPG": [
+          64.04,
+          64.04
+        ],
+        "PVCL2": [
+          127.43,
+          127.43
+        ]
+      },
+      "reference_charges_e": {
+        "PMPE": 0.0,
+        "POPE": 0.0,
+        "QMPE": 0.0,
+        "OYPE": 0.0,
+        "PMPG": -1.0,
+        "PYPG": -1.0,
+        "PVCL2": -2.0
+      },
+      "lipid_descriptions": {
+        "PMPE": "PE(16:0/cy17:0)",
+        "POPE": "PE(16:0/18:1(9Z))",
+        "QMPE": "PE(15:0/cy17:0)",
+        "OYPE": "PE(18:1(9Z)/16:1(9Z))",
+        "PMPG": "PG(16:0/cy17:0)",
+        "PYPG": "PE(16:0/16:1(9Z))",
+        "PVCL2": "CL(1'-[16:0/18:1(11Z)],3'-[16:0/18:1(11Z)])"
+      },
+      "table_reported_totals": [
+        100,
+        100
+      ],
+      "table_row_totals": [
+        100,
+        100
+      ],
+      "table_totals_match": true,
+      "archive_url": "https://www.charmm-gui.org/archive/biomembrane/G-IM/G-IM.tar.gz",
+      "requires_calcium": false,
+      "archive_sha256": "4a627399042c28662abde07913030ffdb8307199ad9ed114250c91a6e1339d7e",
+      "published_upper_ratios": {
+        "PMPE": 46,
+        "POPE": 13,
+        "QMPE": 12,
+        "OYPE": 8,
+        "PMPG": 10,
+        "PYPG": 9,
+        "PVCL2": 2
+      },
+      "published_lower_ratios": {
+        "PMPE": 46,
+        "POPE": 13,
+        "QMPE": 12,
+        "OYPE": 8,
+        "PMPG": 10,
+        "PYPG": 9,
+        "PVCL2": 2
+      },
+      "lipid_aliases": {},
+      "whole_molecule_counts": [
+        {
+          "QMPE": 12,
+          "PMPE": 46,
+          "PYPG": 9,
+          "PMPG": 10,
+          "POPE": 13,
+          "OYPE": 8,
+          "PVCL2": 2
+        },
+        {
+          "PMPG": 10,
+          "POPE": 13,
+          "PMPE": 46,
+          "QMPE": 12,
+          "OYPE": 8,
+          "PVCL2": 2,
+          "PYPG": 9
+        }
+      ]
+    },
+    {
+      "id": "G+PM",
+      "name": "cell membranes of Gram-positive bacteria",
+      "kind": "biological",
+      "ppm_membrane": "GpI",
+      "temperature_K": 310.15,
+      "reference_box_A": [
+        81.74,
+        81.74,
+        100.0
+      ],
+      "upper_ratios": {
+        "DPPE": 3,
+        "AIPG": 27,
+        "PAICL2": 8,
+        "MAIPG": 22,
+        "MAIPE": 9,
+        "AIPE": 11,
+        "PAIPE": 4,
+        "PAIPG": 9,
+        "DPPG": 7
+      },
+      "lower_ratios": {
+        "MAIPG": 22,
+        "AIPE": 11,
+        "AIPG": 27,
+        "PAIPE": 4,
+        "PAICL2": 8,
+        "PAIPG": 9,
+        "MAIPE": 9,
+        "DPPG": 7,
+        "DPPE": 3
+      },
+      "reference_areas_A2": {
+        "MAIPG": [
+          62.13,
+          62.13
+        ],
+        "AIPG": [
+          62.3,
+          62.3
+        ],
+        "PAIPG": [
+          61.96,
+          61.96
+        ],
+        "DPPG": [
+          61.49,
+          61.49
+        ],
+        "MAIPE": [
+          60.04,
+          60.04
+        ],
+        "AIPE": [
+          60.29,
+          60.29
+        ],
+        "PAIPE": [
+          60.73,
+          60.73
+        ],
+        "DPPE": [
+          59.35,
+          59.35
+        ],
+        "PAICL2": [
+          125.04,
+          125.04
+        ]
+      },
+      "reference_charges_e": {
+        "MAIPG": -1.0,
+        "AIPG": -1.0,
+        "PAIPG": -1.0,
+        "DPPG": -1.0,
+        "MAIPE": 0.0,
+        "AIPE": 0.0,
+        "PAIPE": 0.0,
+        "DPPE": 0.0,
+        "PAICL2": -2.0
+      },
+      "lipid_descriptions": {
+        "MAIPG": "PG (14:0 /a15:0)",
+        "AIPG": "PG (a15:0 /i15:0)",
+        "PAIPG": "PG (16:0 /a15:0)",
+        "DPPG": "PG (16:0 /16:0)",
+        "MAIPE": "PE (14:0 /a15:0)",
+        "AIPE": "PE (a15:0 /i15:0)",
+        "PAIPE": "PE (16:0 /a15:0)",
+        "DPPE": "PE (16:0 /16:0)",
+        "PAICL2": "CL (1'-[16:0 / a15:0],3'-[16:0 / a15:0])"
+      },
+      "table_reported_totals": [
+        100,
+        100
+      ],
+      "table_row_totals": [
+        100,
+        100
+      ],
+      "table_totals_match": true,
+      "archive_url": "https://www.charmm-gui.org/archive/biomembrane/G+PM/G+PM.tar.gz",
+      "requires_calcium": false,
+      "archive_sha256": "0f7eea835b6696a5284d2437cc5683892adb140fdf94317162a4e927c9c6ef83",
+      "published_upper_ratios": {
+        "MAIPG": 22,
+        "AIPG": 27,
+        "PAIPG": 9,
+        "DPPG": 7,
+        "MAIPE": 9,
+        "AIPE": 11,
+        "PAIPE": 4,
+        "DPPE": 3,
+        "PAICL2": 8
+      },
+      "published_lower_ratios": {
+        "MAIPG": 22,
+        "AIPG": 27,
+        "PAIPG": 9,
+        "DPPG": 7,
+        "MAIPE": 9,
+        "AIPE": 11,
+        "PAIPE": 4,
+        "DPPE": 3,
+        "PAICL2": 8
+      },
+      "lipid_aliases": {},
+      "whole_molecule_counts": [
+        {
+          "DPPE": 3,
+          "AIPG": 27,
+          "PAICL2": 8,
+          "MAIPG": 22,
+          "MAIPE": 9,
+          "AIPE": 11,
+          "PAIPE": 4,
+          "PAIPG": 9,
+          "DPPG": 7
+        },
+        {
+          "MAIPG": 22,
+          "AIPE": 11,
+          "AIPG": 27,
+          "PAIPE": 4,
+          "PAICL2": 8,
+          "PAIPG": 9,
+          "MAIPE": 9,
+          "DPPG": 7,
+          "DPPE": 3
+        }
+      ]
+    }
+  ],
+  "pc_cholesterol_families": [
+    "POPC",
+    "DOPC",
+    "DSPC",
+    "DMPC",
+    "DPPC"
+  ]
+}

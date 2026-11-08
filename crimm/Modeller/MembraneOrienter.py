@@ -1,495 +1,288 @@
-"""Orient proteins for membrane building.
+"""Orient proteins with the native PPM3 positioning model.
 
-This module implements the geometry used by the PERMM/PPM orientation step:
-rotate a coordinate set by angle ``teta`` around an axis in the XY plane whose 
-direction is defined by ``phi``.  The default scorer is an atom-level
-PERMM-style transfer-energy approximation: each heavy atom is assigned a
-depth-dependent cost or reward for being in the membrane core/interface.
+PPM3 uses a DOPC profile and its own ionization model, not CHARMM charges.
+The native optimizer returns a full rigid transform for the complete model.
 """
 
 from __future__ import annotations
 
+import ctypes
 from dataclasses import dataclass
-from typing import Iterable
+from functools import lru_cache
+from importlib.resources import files
+from importlib.util import find_spec
+from string import ascii_letters, digits
+from threading import Lock
 
 import numpy as np
 
 
-HYDROPHOBIC_RESIDUES = frozenset(
-    {
-        "ALA",
-        "CYS",
-        "ILE",
-        "LEU",
-        "MET",
-        "PHE",
-        "PRO",
-        "VAL",
-        "TRP",
-        "TYR",
-    }
+PPM3_REVISION = "5784f088032e5b9fb35147815f67500b8cc94855"
+PPM3_MEMBRANE_TYPES = (
+    "PMm", "PMp", "PMf", "ERf", "ERm", "GOL", "LYS", "END", "VAC", "MOM", "MIM",
+    "THp", "THb", "GnO", "GnI", "GpI", "ARC", "LPC", "MPC", "OPC", "EPC",
 )
 
-POLAR_RESIDUES = frozenset(
-    {
-        "ASN",
-        "GLN",
-        "SER",
-        "THR",
-        "HSD",
-        "HSE",
-        "HSP",
-        "HIS",
-    }
+PROTEIN_CHAIN_TYPES = frozenset({"Polypeptide(L)", "Protein", "Chain", "Base Chain"})
+PROTEIN_RESIDUES = frozenset(
+    "ALA ARG ASN ASP CYS GLN GLU GLY HIS HSD HSE HSP ILE LEU LYS MET "
+    "PHE PRO SER THR TRP TYR VAL".split()
 )
-
-CHARGED_RESIDUES = frozenset(
-    {
-        "ARG",
-        "LYS",
-        "ASP",
-        "GLU",
-    }
-)
-
-PROTEIN_CHAIN_TYPES = frozenset({"Polypeptide(L)", "Protein", "Chain"})
-
-BACKBONE_ATOMS = frozenset({"N", "CA", "C", "O", "OXT", "H", "HA"})
-POSITIVE_RESIDUES = frozenset({"ARG", "LYS", "HIS", "HSD", "HSE", "HSP"})
-NEGATIVE_RESIDUES = frozenset({"ASP", "GLU"})
+TERMINAL_ATOMS = {
+    "ACE": {"CAY", "CY", "OY"}, "ACED": {"CAY", "CY", "OY"},
+    "ACP": {"CAY", "CY", "OY"}, "ACPD": {"CAY", "CY", "OY"},
+    "CT2": {"NT"}, "CT3": {"NT", "CAT"},
+}
+_NATIVE_LOCK = Lock()  # ponytail: COMMON state serializes calls; use separate processes for throughput.
+_NATIVE_ERRORS = {
+    1: "invalid native input",
+    2: "missing or malformed residue library",
+    3: "unsupported residue or atom typing",
+    4: "native capacity exceeded",
+    5: "no favorable membrane insertion minimum",
+    6: "undefined native geometry or rigid transform",
+}
 
 
 @dataclass(frozen=True)
 class MembraneOrientation:
-    """Rigid-body transform selected by the membrane orientation search."""
+    """Native transform and positioning metrics.
 
-    phi: float
-    teta: float
-    shift_z: float
+    Coordinates use Å. Energy uses kcal/mol, and angles use degrees.
+    The tilt is the optimizer angle, not a fitted transmembrane-axis angle.
+    The model is the native classification before final optimization.
+    Positioning uncertainty is Z-shift RMS for model 1 and thickness-range
+    half-width for models 2 and 3. Native spreads are not confidence intervals.
+    """
+
+    rotation: np.ndarray
+    translation: np.ndarray
     score: float
+    membrane_thickness: float
+    tilt: float
+    positioning_uncertainty: float
+    tilt_uncertainty: float
+    model: int
+    ph: float
+    temperature: float
+    profile: str = "DOPC"
+    scored_atoms: str = "protein core heavy atoms"
+    membrane_type: str = "OPC"
+    native_version: str = "PPM3"
+    source_revision: str = PPM3_REVISION
+    equilibrium_thickness: float | None = None
+    matching_thickness: float | None = None
+    mismatch_coefficient: float | None = None
+    topology: str = "in"
+    topology_reference: dict | None = None
+
+
+@lru_cache(maxsize=1)
+def _native_function():
+    spec = find_spec("crimm.Modeller._ppm3._native")
+    if spec is None or spec.origin is None:
+        raise RuntimeError(
+            "The native PPM3 library is unavailable. "
+            "Build it with 'python setup.py build_ext --inplace' or install a compiled wheel."
+        )
+    try:
+        library = ctypes.CDLL(spec.origin)
+    except OSError as exc:
+        raise RuntimeError(f"The native PPM3 library did not load: {exc}") from exc
+    function = library.ppm3_orient
+    vector = np.ctypeslib.ndpointer(dtype=np.float64, ndim=1, flags="C_CONTIGUOUS")
+    function.argtypes = [
+        ctypes.c_int,
+        np.ctypeslib.ndpointer(dtype=np.float64, ndim=2, flags="C_CONTIGUOUS"),
+        ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p,
+        np.ctypeslib.ndpointer(dtype=np.int32, ndim=1, flags="C_CONTIGUOUS"),
+        ctypes.c_char_p, ctypes.c_int, ctypes.c_double, ctypes.c_double, ctypes.c_int, ctypes.c_char_p,
+        np.ctypeslib.ndpointer(dtype=np.float64, ndim=2, flags="F_CONTIGUOUS"),
+        vector, vector, vector, ctypes.POINTER(ctypes.c_int),
+    ]
+    function.restype = None
+    return function
+
+
+@lru_cache(maxsize=1)
+def _residue_atom_names():
+    atom_names = {}
+    for line in files("crimm.Modeller._ppm3").joinpath("res.lib").read_text().splitlines():
+        fields = line.split()
+        if fields and fields[0] == "RES":
+            resname = fields[1]
+            atom_names[resname] = set()
+        elif len(fields) == 2 and fields[1].isdigit():
+            atom_names[resname].add(fields[0])
+    return atom_names
 
 
 class MembraneOrienter:
-    """Orient a protein relative to an implicit membrane centered on XY."""
+    """Use PPM3 without a Python scorer or fallback."""
 
-    def __init__(
-        self,
-        model,
-        membrane_core_z: float = 15.0,
-        interface_z: float = 20.0,
-        interface_width: float = 3.0,
-        phi_step: float = 10.0,
-        teta_step: float = 10.0,
-        shift_step: float = 2.0,
-        shift_limit: float = 20.0,
-        score_mode: str = "atom_transfer",
-        use_exposure_weights: bool = True,
-        exposure_cutoff: float = 8.0,
-        exposure_neighbor_scale: float = 14.0,
-        min_exposure_weight: float = 0.15,
-        refine: bool = True,
-        refine_factor: int = 5,
-    ):
+    def __init__(self, model, ph: float = 7.5, temperature: float = 293.0, topology: str = "in",
+                 membrane_type: str = "OPC"):
         self.model = model
-        self.membrane_core_z = float(membrane_core_z)
-        self.interface_z = float(interface_z)
-        self.interface_width = float(interface_width)
-        self.phi_step = float(phi_step)
-        self.teta_step = float(teta_step)
-        self.shift_step = float(shift_step)
-        self.shift_limit = float(shift_limit)
-        self.score_mode = score_mode
-        self.use_exposure_weights = bool(use_exposure_weights)
-        self.exposure_cutoff = float(exposure_cutoff)
-        self.exposure_neighbor_scale = float(exposure_neighbor_scale)
-        self.min_exposure_weight = float(min_exposure_weight)
-        self.refine = bool(refine)
-        self.refine_factor = int(refine_factor)
+        self.ph = float(ph)
+        self.temperature = float(temperature)
+        self.topology = topology
+        self.membrane_type = membrane_type
+        if membrane_type not in PPM3_MEMBRANE_TYPES:
+            raise ValueError(f"PPM3 requires a named planar membrane code: {', '.join(PPM3_MEMBRANE_TYPES)}.")
+        if not np.isfinite(self.ph) or not 0.0 <= self.ph <= 14.0:
+            raise ValueError("PPM3 pH must be finite and between 0 and 14.")
+        if not np.isfinite(self.temperature) or self.temperature <= 0:
+            raise ValueError("PPM3 temperature must be finite and positive in kelvin.")
+        if topology not in {"in", "out"}:
+            raise ValueError("PPM3 topology must be 'in' or 'out'.")
 
     def orient(self, in_place: bool = True) -> MembraneOrientation:
-        """Find and optionally apply a membrane orientation transform."""
+        """Find a native orientation and optionally transform the complete model."""
 
-        coords = self._protein_heavy_atom_coords()
-        if len(coords) == 0:
-            raise ValueError("No protein heavy atoms found for membrane orientation.")
-
-        center = coords.mean(axis=0)
-        if self.score_mode == "atom_transfer":
-            search_points = self._atom_transfer_points(center=center)
-        elif self.score_mode == "residue":
-            search_points = self._residue_points(center=center)
-        else:
-            raise ValueError(f"Unknown membrane orientation score mode: {self.score_mode}")
-
-        if not search_points:
-            raise ValueError("No protein points found for membrane orientation.")
-
-        orientation = self.search_orientation(search_points)
-
-        if in_place:
-            self.apply_orientation(orientation, center=center)
-
-        return orientation
-
-    def search_orientation(self, residue_points) -> MembraneOrientation:
-        """Grid-search PERMM-style phi/teta plus a Z shift."""
-
-        phi_values = np.arange(0.0, 180.0, self.phi_step)
-        teta_values = np.arange(-90.0, 90.0 + self.teta_step, self.teta_step)
-        shift_values = np.arange(
-            -self.shift_limit,
-            self.shift_limit + self.shift_step,
-            self.shift_step,
-        )
-
-        best = self._search_orientation_grid(
-            residue_points,
-            phi_values,
-            teta_values,
-            shift_values,
-        )
-
-        if not self.refine or self.refine_factor <= 1:
-            return best
-
-        phi_step = self.phi_step / self.refine_factor
-        teta_step = self.teta_step / self.refine_factor
-        shift_step = self.shift_step / self.refine_factor
-
-        phi_values = self._wrapped_phi_values(
-            best.phi - self.phi_step,
-            best.phi + self.phi_step,
-            phi_step,
-        )
-        teta_values = np.arange(
-            max(-90.0, best.teta - self.teta_step),
-            min(90.0, best.teta + self.teta_step) + teta_step,
-            teta_step,
-        )
-        shift_values = np.arange(
-            max(-self.shift_limit, best.shift_z - self.shift_step),
-            min(self.shift_limit, best.shift_z + self.shift_step) + shift_step,
-            shift_step,
-        )
-
-        return self._search_orientation_grid(
-            residue_points,
-            phi_values,
-            teta_values,
-            shift_values,
-            best=best,
-        )
-
-    def _search_orientation_grid(
-        self,
-        residue_points,
-        phi_values: np.ndarray,
-        teta_values: np.ndarray,
-        shift_values: np.ndarray,
-        best: MembraneOrientation | None = None,
-    ) -> MembraneOrientation:
-        """Evaluate a grid of PERMM-style orientation variables."""
-
-        if best is None:
-            best = MembraneOrientation(phi=0.0, teta=0.0, shift_z=0.0, score=np.inf)
-
-        coords = np.array([point[0] for point in residue_points], dtype=float)
-
-        for phi in phi_values:
-            for teta in teta_values:
-                rotated = coords @ self.permm_rotation_matrix(phi, teta).T
-                for shift_z in shift_values:
-                    shifted_z = rotated[:, 2] + shift_z
-                    score = self._score_depths(residue_points, shifted_z)
-                    if score < best.score:
-                        best = MembraneOrientation(
-                            phi=float(phi),
-                            teta=float(teta),
-                            shift_z=float(shift_z),
-                            score=float(score),
-                        )
-
-        return best
-
-    @staticmethod
-    def _wrapped_phi_values(start: float, stop: float, step: float) -> np.ndarray:
-        """Return phi values wrapped into the PERMM 0-180 degree interval."""
-
-        values = np.arange(start, stop + step, step)
-        return np.unique(np.mod(values, 180.0))
-
-    def apply_orientation(
-        self,
-        orientation: MembraneOrientation,
-        center: np.ndarray | None = None,
-    ):
-        """Apply an orientation transform to the model in place."""
-
-        if center is None:
-            center = self._protein_heavy_atom_coords().mean(axis=0)
-
-        rotation = self.permm_rotation_matrix(orientation.phi, orientation.teta)
-        shift = np.array([0.0, 0.0, orientation.shift_z], dtype=float)
-
-        for atom in self._protein_atoms(include_hydrogen=True):
-            atom.coord = ((atom.coord - center) @ rotation.T) + shift
-
-    @staticmethod
-    def permm_rotation_matrix(phi: float, teta: float) -> np.ndarray:
-        """Return the rotation matrix from PERMM ``tilting.f``.
-
-        ``phi`` and ``teta`` are in degrees.  ``teta`` is rotation around an
-        axis in the XY plane.  ``phi`` defines that axis direction.
-        """
-
-        phi_rad = np.deg2rad(phi)
-        teta_rad = np.deg2rad(teta)
-
-        a = np.sin(phi_rad)
-        b = np.cos(phi_rad)
-        si = np.sin(teta_rad)
-        co = np.cos(teta_rad)
-        co1 = 1.0 - co
-
-        return np.array(
-            [
-                [co + a * a * co1, a * b * co1, b * si],
-                [a * b * co1, co + b * b * co1, -a * si],
-                [-b * si, a * si, co],
-            ],
-            dtype=float,
-        )
-
-    def _score_depths(self, points, z_values: np.ndarray) -> float:
-        if self.score_mode == "atom_transfer":
-            return self._score_atom_depths(points, z_values)
-
-        resnames = [point[1] for point in points]
-        return self._score_residue_depths(resnames, z_values)
-
-    def _score_atom_depths(self, atom_points, z_values: np.ndarray) -> float:
-        """Score atom transfer energy in a symmetric membrane slab.
-
-        This is a CRIMM-native approximation of the PERMM idea, not a direct
-        line-by-line port.  Hydrophobic exposed atoms are rewarded in the core;
-        polar/charged exposed atoms are penalized in the core and weakly
-        rewarded near the interface.
-        """
-
-        abs_z = np.abs(z_values)
-        core = self._core_profile(abs_z)
-        interface = self._interface_profile(abs_z)
-
-        score = 0.0
-        total_weight = 0.0
-
-        for i, point in enumerate(atom_points):
-            _, core_energy, interface_energy, weight = point
-            score += weight * (core_energy * core[i] + interface_energy * interface[i])
-            total_weight += weight
-
-        return score / max(total_weight, 1.0)
-
-    def _score_residue_depths(self, resnames: list[str], z_values: np.ndarray) -> float:
-        """Score residue depths relative to a symmetric membrane slab."""
-
-        score = 0.0
-        abs_z = np.abs(z_values)
-
-        for resname, depth in zip(resnames, abs_z):
-            if resname in HYDROPHOBIC_RESIDUES:
-                score += self._quadratic_penalty(depth, target=0.0, width=self.membrane_core_z)
-            elif resname in CHARGED_RESIDUES:
-                score += 3.0 * self._inside_penalty(depth, cutoff=self.membrane_core_z)
-            elif resname in POLAR_RESIDUES:
-                score += self._inside_penalty(depth, cutoff=self.membrane_core_z)
-            else:
-                score += 0.25 * self._inside_penalty(depth, cutoff=self.membrane_core_z)
-
-        return score / max(len(resnames), 1)
-
-    def _core_profile(self, abs_z: np.ndarray) -> np.ndarray:
-        """Smooth membrane-core occupancy profile."""
-
-        softness = 1.5
-        return 1.0 / (1.0 + np.exp((abs_z - self.membrane_core_z) / softness))
-
-    def _interface_profile(self, abs_z: np.ndarray) -> np.ndarray:
-        """Smooth headgroup/interface occupancy profile."""
-
-        return np.exp(
-            -0.5 * ((abs_z - self.interface_z) / self.interface_width) ** 2
-        )
-
-    @staticmethod
-    def _quadratic_penalty(value: float, target: float, width: float) -> float:
-        distance = max(0.0, abs(value - target) - width)
-        return distance * distance
-
-    @staticmethod
-    def _inside_penalty(value: float, cutoff: float) -> float:
-        distance = max(0.0, cutoff - value)
-        return distance * distance
-
-    def _residue_points(self, center: np.ndarray):
-        """Return residue center points translated relative to protein center."""
-
-        points = []
-        for chain in self._protein_chains():
-            for residue in chain:
-                atoms = [
-                    atom
-                    for atom in residue.get_atoms()
-                    if not self._is_hydrogen(atom)
-                ]
-                if not atoms:
-                    continue
-
-                coords = np.array([atom.coord for atom in atoms], dtype=float)
-                points.append((coords.mean(axis=0) - center, residue.resname.strip().upper()))
-
-        return points
-
-    def _atom_transfer_points(self, center: np.ndarray):
-        """Return atom points plus transfer-energy parameters."""
-
-        coords = []
-        terms = []
-
-        for chain in self._protein_chains():
-            for residue in chain:
-                resname = residue.resname.strip().upper()
-                for atom in residue.get_atoms():
-                    if self._is_hydrogen(atom):
-                        continue
-
-                    atom_name = atom.get_name().strip().upper()
-                    core_energy, interface_energy, weight = self._atom_transfer_terms(
-                        resname,
-                        atom_name,
-                        getattr(atom, "element", "").strip().upper(),
-                    )
-                    coords.append(atom.coord.copy())
-                    terms.append((core_energy, interface_energy, weight))
-
-        if not coords:
-            return []
-
-        coords = np.array(coords, dtype=float)
-        exposure_weights = np.ones(len(coords), dtype=float)
-        if self.use_exposure_weights:
-            exposure_weights = self._approximate_exposure_weights(coords)
-
-        points = []
-        for coord, term, exposure_weight in zip(coords, terms, exposure_weights):
-            core_energy, interface_energy, weight = term
-            points.append(
-                (
-                    coord - center,
-                    core_energy,
-                    interface_energy,
-                    weight * exposure_weight,
-                )
+        all_coords = np.array([
+            atom.coord for residue in self.model.get_residues()
+            for atom in residue.get_unpacked_list()
+        ], dtype=np.float64)
+        if (all_coords.size and (all_coords.ndim != 2 or all_coords.shape[1] != 3
+                                 or not np.isfinite(all_coords).all())):
+            raise ValueError("All retained model coordinates must contain three finite values per atom.")
+        coords, names, residues, chains, residue_ids = self._protein_input()
+        rotation = np.empty((3, 3), dtype=np.float64, order="F")
+        translation = np.empty(3, dtype=np.float64)
+        metrics = np.empty(6, dtype=np.float64)
+        matching = np.empty(3, dtype=np.float64)
+        status = ctypes.c_int()
+        path = str(files("crimm.Modeller._ppm3").joinpath("res.lib")).encode()
+        with _NATIVE_LOCK:
+            _native_function()(
+                len(coords), coords, names, residues, chains, residue_ids,
+                path, len(path), self.ph, self.temperature, int(self.topology == "out"),
+                self.membrane_type.encode("ascii"), rotation, translation, metrics, matching, ctypes.byref(status),
             )
-
-        return points
-
-    def _approximate_exposure_weights(self, coords: np.ndarray) -> np.ndarray:
-        """Estimate atom exposure from local heavy-atom neighbor density.
-
-        PERMM uses solvent-accessible surface area.  This inexpensive proxy
-        downweights atoms with many nearby heavy atoms and preserves exposed
-        atoms as the main drivers of orientation.
-        """
-
-        neighbor_counts = np.zeros(len(coords), dtype=float)
-        cutoff2 = self.exposure_cutoff * self.exposure_cutoff
-        chunk_size = 512
-
-        for start in range(0, len(coords), chunk_size):
-            stop = min(start + chunk_size, len(coords))
-            delta = coords[start:stop, None, :] - coords[None, :, :]
-            dist2 = np.sum(delta * delta, axis=2)
-            counts = np.sum(dist2 < cutoff2, axis=1) - 1
-            neighbor_counts[start:stop] = counts
-
-        exposure = np.exp(-neighbor_counts / self.exposure_neighbor_scale)
-        return np.clip(exposure, self.min_exposure_weight, 1.0)
-
-    def _atom_transfer_terms(
-        self,
-        resname: str,
-        atom_name: str,
-        element: str,
-    ) -> tuple[float, float, float]:
-        """Return core energy, interface energy, and exposure weight."""
-
-        sidechain_weight = 1.0
-        backbone_weight = 0.35
-        weight = backbone_weight if atom_name in BACKBONE_ATOMS else sidechain_weight
-
-        if self._is_charged_sidechain_atom(resname, atom_name):
-            return 9.0, -1.0, weight
-
-        if element in {"O", "N"}:
-            if atom_name in BACKBONE_ATOMS:
-                return 1.2, -0.15, weight
-            return 3.5, -0.6, weight
-
-        if element == "S":
-            if resname in HYDROPHOBIC_RESIDUES:
-                return -0.8, 0.0, weight
-            return 1.0, -0.2, weight
-
-        if element == "C":
-            if atom_name in BACKBONE_ATOMS:
-                return 0.1, 0.0, weight
-            if resname in HYDROPHOBIC_RESIDUES:
-                return -1.1, 0.1, weight
-            if resname in CHARGED_RESIDUES:
-                return 0.5, -0.1, weight
-            return -0.25, 0.0, weight
-
-        return 0.2, 0.0, weight
-
-    @staticmethod
-    def _is_charged_sidechain_atom(resname: str, atom_name: str) -> bool:
-        if resname in NEGATIVE_RESIDUES and atom_name.startswith(("OD", "OE")):
-            return True
-        if resname == "LYS" and atom_name == "NZ":
-            return True
-        if resname == "ARG" and atom_name.startswith(("NE", "NH")):
-            return True
-        if resname in {"HIS", "HSD", "HSE", "HSP"} and atom_name.startswith(("ND", "NE")):
-            return True
-        return False
-
-    def _protein_heavy_atom_coords(self) -> np.ndarray:
-        return np.array(
-            [
-                atom.coord
-                for atom in self._protein_atoms(include_hydrogen=False)
-            ],
-            dtype=float,
+        if status.value:
+            reason = _NATIVE_ERRORS.get(status.value, "unknown native error")
+            raise RuntimeError(f"PPM3 orientation failed: {reason} (status {status.value}).")
+        if (not np.isfinite(rotation).all() or not np.isfinite(translation).all()
+                or not np.isfinite(metrics).all() or not np.isfinite(matching).all()
+                or np.any(matching[:2] <= 0) or matching[2] < 0 or metrics[1] <= 0
+                or metrics[5] not in (1, 2, 3)
+                or not np.allclose(rotation.T @ rotation, np.eye(3), atol=2e-5, rtol=0)
+                or not np.isclose(np.linalg.det(rotation), 1.0, atol=2e-5, rtol=0)):
+            raise RuntimeError("PPM3 returned an invalid rigid transform or positioning metrics.")
+        # Remove native REAL rounding from the rigid matrix, with the same native centroid.
+        u, _, vt = np.linalg.svd(rotation)
+        rigid_rotation = u @ vt
+        translation += (rotation - rigid_rotation) @ coords[:10].mean(axis=0)
+        reference = dict(self._reference)
+        reference["final_z"] = float((rigid_rotation @ coords[0] + translation)[2])
+        if abs(reference["final_z"]) <= 0.002:
+            raise RuntimeError("PPM3 topology reference is within 0.002 Å of the membrane midplane.")
+        result = MembraneOrientation(
+            rigid_rotation, translation, *metrics[:5], int(metrics[5]), self.ph, self.temperature,
+            membrane_type=self.membrane_type, equilibrium_thickness=float(matching[0]),
+            matching_thickness=float(matching[1]), mismatch_coefficient=float(matching[2]),
+            topology=self.topology, topology_reference=reference,
         )
+        if in_place:
+            self.apply_orientation(result)
+        return result
 
-    def _protein_atoms(self, include_hydrogen: bool = False) -> Iterable:
-        for chain in self._protein_chains():
-            for atom in chain.get_atoms():
-                if not include_hydrogen and self._is_hydrogen(atom):
-                    continue
-                yield atom
+    def apply_orientation(self, orientation: MembraneOrientation):
+        """Apply the complete native transform to every retained atom."""
 
-    def _protein_chains(self):
-        for chain in self.model:
-            chain_type = getattr(chain, "chain_type", None)
-            if chain_type in {"Lipid", "Sterol", "Solvent", "Ion"}:
-                continue
-            if chain_type is None or chain_type in PROTEIN_CHAIN_TYPES:
-                yield chain
+        atoms = [atom for residue in self.model.get_residues() for atom in residue.get_unpacked_list()]
+        coords = np.array([atom.coord for atom in atoms], dtype=np.float64)
+        transformed = coords @ orientation.rotation.T + orientation.translation
+        if not np.isfinite(transformed).all():
+            raise ValueError("The model contains invalid coordinates for the native transform.")
+        for atom, coord in zip(atoms, transformed):
+            atom.coord = coord
 
-    @staticmethod
-    def _is_hydrogen(atom) -> bool:
-        element = getattr(atom, "element", "").strip().upper()
-        name = atom.get_name().strip().upper()
-        return element == "H" or name.startswith("H")
+    def _protein_input(self):
+        coords, names, residues, chains, residue_ids = [], [], [], [], []
+        atom_names = _residue_atom_names()
+        residue_number = 0
+        self._reference = None
+        protein_chains = [
+            chain for chain in self.model
+            if getattr(chain, "chain_type", None) in PROTEIN_CHAIN_TYPES | {None}
+            and any(residue.resname.strip().upper() in PROTEIN_RESIDUES for residue in chain)
+        ]
+        if len(protein_chains) > 60:
+            raise ValueError("PPM3 supports at most 60 protein chains.")
+        for chain_id, chain in zip(ascii_letters + digits, protein_chains):
+            previous_number = None
+            sequence_id = 0
+            protein_residues = [residue for residue in chain if not residue.id[0].strip()
+                                or residue.resname.strip().upper() in PROTEIN_RESIDUES]
+            for index, residue in enumerate(protein_residues):
+                resname = residue.resname.strip().upper()
+                if resname not in PROTEIN_RESIDUES:
+                    raise ValueError(f"PPM3 does not support protein residue {resname} at {residue.full_id}.")
+                if resname in {"HIS", "HSD", "HSP"}:
+                    raise ValueError(
+                        f"PPM3 does not support {resname} at {residue.full_id}. "
+                        "The native neutral histidine model requires an explicit HSE identity."
+                    )
+                patch = getattr(getattr(residue, "topo_definition", None), "patch_with", None)
+                if patch is not None and patch not in TERMINAL_ATOMS:
+                    raise ValueError(f"PPM3 does not support patch {patch} at {residue.full_id}.")
+                if ((patch in {"ACE", "ACED", "ACP", "ACPD"} and index != 0)
+                        or (patch in {"CT2", "CT3"} and index != len(protein_residues) - 1)):
+                    raise ValueError(f"PPM3 found a nonterminal cap patch {patch} at {residue.full_id}.")
+                native_resname = "HIS" if resname == "HSE" else resname
+                expected = atom_names[native_resname]
+                all_atoms = list(residue.get_atoms())
+                if resname == "HSE" and any(atom.name.strip().upper() == "HD1" for atom in all_atoms):
+                    raise ValueError(f"HSE contains an incompatible HD1 proton at {residue.full_id}.")
+                heavy_atoms = [
+                    atom for atom in all_atoms
+                    if getattr(atom, "element", "").strip().upper() not in {"H", "D"}
+                    and not atom.name.strip().upper().startswith(("H", "D"))
+                ]
+                present = {atom.name.strip().upper() for atom in heavy_atoms}
+                if expected - present:
+                    raise ValueError(
+                        f"PPM3 requires complete protein core atoms at {residue.full_id}: "
+                        f"missing {', '.join(sorted(expected - present))}."
+                    )
+                if self._reference is None:
+                    self._reference = {"chain": getattr(chain, "id", chain_id), "residue": residue.id,
+                                       "atom": "N", "kind": "first available backbone N"}
+                allowed = TERMINAL_ATOMS.get(patch, set())
+                if index == len(protein_residues) - 1:
+                    allowed = allowed | {"OXT"}
+                unsupported = present - expected - allowed
+                if unsupported:
+                    raise ValueError(
+                        f"PPM3 found unsupported protein atoms at {residue.full_id}: "
+                        f"{', '.join(sorted(unsupported))}."
+                    )
+                residue_number += 1
+                if residue_number > 20000:
+                    raise ValueError("PPM3 supports at most 20000 protein residues.")
+                number = residue.id[1]
+                difference = 1 if previous_number is None else number - previous_number
+                if difference < 0:
+                    raise ValueError("PPM3 protein residue numbers must not decrease within a chain.")
+                sequence_id = number if previous_number is None else sequence_id + max(1, difference)
+                if not np.iinfo(np.int32).min <= sequence_id <= np.iinfo(np.int32).max:
+                    raise ValueError("PPM3 cannot encode this residue-number range.")
+                previous_number = number
+                for atom in sorted(heavy_atoms, key=lambda atom: (atom.name.strip().upper() != "N", atom.name)):
+                    name = atom.name.strip().upper()
+                    if name not in expected:
+                        continue
+                    coords.append(atom.coord)
+                    names.append(name.ljust(4).encode("ascii"))
+                    residues.append(native_resname.ljust(4).encode("ascii"))
+                    chains.append(chain_id.encode("ascii"))
+                    residue_ids.append(sequence_id)
+        if not coords:
+            raise ValueError("No protein heavy atoms found for native membrane orientation.")
+        if len(coords) > 150000:
+            raise ValueError("PPM3 supports at most 150000 protein heavy atoms.")
+        coords = np.ascontiguousarray(coords, dtype=np.float64)
+        if coords.shape != (len(coords), 3) or not np.isfinite(coords).all():
+            raise ValueError("PPM3 protein coordinates must contain three finite values per atom.")
+        return coords, b"".join(names), b"".join(residues), b"".join(chains), np.array(residue_ids, dtype=np.int32)

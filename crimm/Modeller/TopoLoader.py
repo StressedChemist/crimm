@@ -220,7 +220,7 @@ def chain_trace_atom_neighbors(
 def _add_dihedral(cur_atom, nei_atom, second_nei_atom, dihedral_set):
     """Add dihedral angle to the dihedral set. (Private function)"""
     for third_nei_atom in second_nei_atom.neighbors:
-        if third_nei_atom == nei_atom:
+        if third_nei_atom in (nei_atom, cur_atom):
             continue
         dihe = Dihedral(cur_atom, nei_atom, second_nei_atom, third_nei_atom)
         dihedral_set.add(dihe)
@@ -813,6 +813,7 @@ class ParameterLoader:
                 self._raw_data_strings.extend(
                     line.rstrip()
                     for line in f.readlines()
+                    if line.strip().upper() != "END" and not line.lstrip().startswith("*")
                 )
     
         param_line_dict = categorize_lines(self._raw_data_strings)
@@ -1018,15 +1019,15 @@ class ResidueTopologySet:
         self.patched_defs = {}
         self._raw_data_strings = []
         self.entity_type = entity_type.lower()
+        self.is_hetero = self.entity_type not in ("protein", "nucleic")
 
         if rtf_parser is not None:
+            self._raw_data_strings = rtf_parser.lines
             self.load_data_dict(rtf_parser.topo_dict, rtf_parser.rtf_version)
             return
 
         if self.entity_type not in rtf_path_dict:
             raise ValueError(f"Unknown entity type: {entity_type}")
-
-        self.is_hetero = self.entity_type not in ("protein", "nucleic")
 
         if self.entity_type == "lipid_cholesterol":
             mass_sources = ("lipid", "cgenff", "carb")
@@ -1044,7 +1045,7 @@ class ResidueTopologySet:
                 cholesterol_text = f.read()
 
             rtf = RTFParser(
-                rtf_block="31 1\n" + "".join(mass_lines) + cholesterol_text
+                rtf_block="31 1\n" + "".join(mass_lines) + cholesterol_text.replace("31  1\n", "", 1)
             )
         else:
             rtf = RTFParser(file_path=rtf_path_dict[self.entity_type])
@@ -1479,8 +1480,8 @@ class TopologyGenerator:
         return len(heavy_atoms) == 1 and heavy_atoms[0].name == "N"
 
     def _normalize_terminal_nh2_cap(
-        self, chain: PolymerChain, last_patch: str, QUIET=False
-    ) -> str:
+        self, chain: PolymerChain, last_patch: str | None, QUIET=False
+    ) -> str | None:
         if chain.chain_type != "Polypeptide(L)" or len(chain.residues) < 2:
             return last_patch
         chain.sort_residues()
@@ -1492,7 +1493,7 @@ class TopologyGenerator:
         if capped_residue.resname not in protein_letters_3to1_extended:
             return last_patch
 
-        effective_last_patch = "CT2" if last_patch in (None, "CT3") else last_patch
+        effective_last_patch = "CT2" if last_patch == "CT3" else last_patch
         if not QUIET:
             warnings.warn(
                 f"Normalized terminal NH2 cap in chain {chain.id}; "
@@ -1816,8 +1817,7 @@ class TopologyGenerator:
             topology = HeterogenTopology()
         chain.topology = topology.load_chain(chain)
 
-        if chain.chain_type != "Sterol":
-            self.cur_param.apply(chain.topology)
+        self.cur_param.apply(chain.topology)
 
         return topology
 
@@ -2373,6 +2373,23 @@ class TopologyGenerator:
         if not self.res_def_dict:
             raise ValueError("No topology loaded. Call generate() on chains first.")
 
+        shared_nonbonded = {}
+        protein_parameters = self.param_dict.get("protein")
+        if protein_parameters is not None:
+            protein = protein_parameters.param_dict
+            for kind in ("lipid", "lipid_cholesterol"):
+                if kind not in self.param_dict:
+                    continue
+                membrane = self.param_dict[kind].param_dict
+                common = protein["nonbonded"].keys() & membrane["nonbonded"].keys()
+                for atom_type in common:
+                    for section in ("nonbonded", "nonbonded14"):
+                        first = protein[section].get(atom_type, protein["nonbonded"][atom_type])
+                        second = membrane[section].get(atom_type, membrane["nonbonded"][atom_type])
+                        if first != second:
+                            raise ValueError(f"Incompatible shared {section} parameters for {atom_type} in protein and membrane.")
+                shared_nonbonded[kind] = common
+
         # Create output directory
         output_dir = os.path.join(path, toppar_folder)
         os.makedirs(output_dir, exist_ok=True)
@@ -2382,10 +2399,37 @@ class TopologyGenerator:
         prm_files = []
         stream_files = []
 
+        # Shared membrane parameters contain NBFIX terms for other force-field types.
+        shared_membrane_types = bool({"lipid", "lipid_cholesterol"} & self.param_dict.keys())
+        if shared_membrane_types:
+            mass_lines = {}
+            for source_type in ("protein", "nucleic", "carb", "cgenff", "lipid", "water_ions"):
+                with open(rtf_path_dict[source_type], encoding="utf-8") as source:
+                    for line in source:
+                        if line.strip().upper().startswith("MASS"):
+                            mass_lines.setdefault(line.split()[2], line.rstrip())
+            for definitions in self.res_def_dict.values():
+                for line in definitions._raw_data_strings:
+                    if line.strip().upper().startswith("MASS"):
+                        mass_lines[line.split()[2]] = line.rstrip()
+            mass_path = os.path.join(output_dir, "membrane_masses.rtf")
+            with open(mass_path, "w", encoding="utf-8") as f:
+                f.write("* Shared membrane parameter atom types\n*\n36 1\n")
+                f.write("\n".join(mass_lines.values()) + "\nEND\n")
+            written_files.append(mass_path)
+            rtf_files.append("membrane_masses.rtf")
+            type_path = os.path.join(output_dir, "membrane_types.prm")
+            with open(type_path, "w", encoding="utf-8") as f:
+                f.write("* Shared membrane parameter atom types\n*\nATOMS\n")
+                f.write("\n".join(mass_lines.values()) + "\nEND\n")
+            written_files.append(type_path)
+            prm_files.append("membrane_types.prm")
+
         # Determine which types to export (exclude cgenff and water_ions - handled separately)
         biopolymer_types = [
             t for t in self.res_def_dict.keys() if t not in ("cgenff", "water_ions")
         ]
+        biopolymer_types.sort(key=lambda kind: kind != "protein")
 
         # Write biopolymer RTF files
         for topo_type in biopolymer_types:
@@ -2405,14 +2449,28 @@ class TopologyGenerator:
             rtf_files.append(f"{topo_type}.rtf")
 
         # Write biopolymer PRM files
+        exported_parameter_blocks = set()
         for topo_type in biopolymer_types:
             if topo_type in self.param_dict:
                 param_loader = self.param_dict[topo_type]
+                block = tuple(param_loader._raw_data_strings)
+                if block in exported_parameter_blocks:
+                    continue
+                exported_parameter_blocks.add(block)
                 prm_path = os.path.join(output_dir, f"{topo_type}.prm")
                 with open(prm_path, "w", encoding="utf-8") as f:
                     f.write(f"* {topo_type.upper()} PRM exported by crimm\n")
                     f.write("*\n")
+                    in_nonbonded = False
                     for line in param_loader._raw_data_strings:
+                        if shared_membrane_types and line.strip().upper().startswith(("ATOMS", "MASS")):
+                            continue
+                        fields = line.strip().split()
+                        keyword = fields[0].upper() if fields else ""
+                        if keyword in {"BONDS", "ANGLES", "DIHEDRALS", "IMPROPER", "CMAP", "NONBONDED", "NBFIX", "HBOND", "END"}:
+                            in_nonbonded = keyword == "NONBONDED"
+                        elif in_nonbonded and keyword in shared_nonbonded.get(topo_type, ()):
+                            continue
                         f.write(line + "\n")
                     f.write("\nEND\n")
                 written_files.append(prm_path)
@@ -2451,7 +2509,17 @@ class TopologyGenerator:
         if include_water_ions:
             src_str = os.path.join(toppar_dir, "water_ions.str")
             dst_str = os.path.join(output_dir, "water_ions.str")
-            shutil.copy2(src_str, dst_str)
+            if shared_membrane_types:
+                in_parameters = False
+                with open(src_str, encoding="utf-8") as source, open(dst_str, "w", encoding="utf-8") as output:
+                    for line in source:
+                        if line.strip().lower().startswith("read para"):
+                            in_parameters = True
+                        if in_parameters and line.strip().upper().startswith(("ATOMS", "MASS")):
+                            continue
+                        output.write(line)
+            else:
+                shutil.copy2(src_str, dst_str)
             written_files.append(dst_str)
             stream_files.append("water_ions.str")
 

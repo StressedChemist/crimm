@@ -22,6 +22,16 @@ from crimm.Modeller.TopoLoader import TopologyGenerator
 
 WATER_COORD_PATH = os.path.join(os.path.dirname(Data.__file__), 'water_coords.npy')
 BOXWIDTH=18.662 # water unit cube width
+# The source unit's closest periodic O-O pair is 2.534 A.
+PERIODIC_WATER_OO_CUTOFF = 2.4
+
+
+def wrap_periodic(coords, box_dims):
+    """Keep spatial-index coordinates strictly inside [0, box).
+
+    A tiny negative value can round to the upper boundary on the first modulo.
+    """
+    return np.mod(np.mod(coords, box_dims), box_dims)
 
 # Physical constants for ion calculations
 WATER_MOLARITY = 55.5  # Molar concentration of pure water at 298K (often approximated as 56)
@@ -238,6 +248,10 @@ class Solvator:
         self.coords = None
         self.box_dim = None
         self.box_dims = None  # For orthorhombic: (a, b, c)
+        solvation_info = getattr(self.model, '_solvation_info', {})
+        self.periodic = solvation_info.get('periodic', False)
+        if self.periodic:
+            self.box_dims = tuple(solvation_info['box_dims'])
         self.water_box_coords = None
         # unit of pre-equilibrated cube of water molecules (18.662 A each side)
         self.water_unit_coords = np.load(WATER_COORD_PATH)
@@ -401,7 +415,8 @@ class Solvator:
             orient_coords = True,
             box_type = 'cube',
             orient_method = None,
-            box_dims = None
+            box_dims = None,
+            periodic = False
 
         ) -> list:
         """Solvate the entity with a water box.
@@ -443,6 +458,10 @@ class Solvator:
         box_dims : tuple, optional
             For orthorhombic/tetragonal boxes, specify (a, b, c) dimensions.
             If None, dimensions are calculated from molecule extents + cutoff.
+        periodic : bool, optional
+            Use minimum-image contacts in an explicit orthorhombic cell.
+            This requires box_dims and orient_coords=False. Solute coordinates
+            can extend beyond the cell and remain unchanged.
 
         Returns
         -------
@@ -454,6 +473,14 @@ class Solvator:
         suggest_optimal_crystal : Recommend optimal crystal type based on geometry
         CRYSTAL_TYPES : Dictionary of all supported crystal types
         """
+        if periodic:
+            if box_type != 'ortho' or box_dims is None or orient_coords:
+                raise ValueError('periodic solvation requires explicit ortho box_dims and orient_coords=False.')
+            dimensions = np.asarray(box_dims, dtype=float)
+            if dimensions.shape != (3,) or not np.isfinite(dimensions).all() or np.any(dimensions <= 0):
+                raise ValueError('periodic box_dims must contain three finite positive lengths.')
+        self.periodic = periodic
+
         # Validate crystal type
         if box_type not in CRYSTAL_TYPES:
             raise ValueError(
@@ -576,9 +603,7 @@ class Solvator:
             # Fallback for any other type
             self.box_dim = extents.max() + 2 * self.cutoff
             self.box_dims = (self.box_dim, self.box_dim, self.box_dim)
-        if self.box_dims[0] < min_box_dim[0] or \
-           self.box_dims[1] < min_box_dim[1] or \
-           self.box_dims[2] < min_box_dim[2]:
+        if not self.periodic and any(dimension < extent for dimension, extent in zip(self.box_dims, min_box_dim)):
             raise ValueError(
                 f'Calculated box dimensions {self.box_dims}Å are smaller than existing '
                 f'solvent molecule extents {min_box_dim}Å. Increase cutoff or provide '
@@ -952,8 +977,9 @@ class Solvator:
                 # Fallback to cubic
                 sdf_value = sdf_cube(oxygen, self.box_dim)
 
-            # Select waters at least solvcut distance inside the boundary
-            if sdf_value <= -self.solvcut:
+            # Periodic faces have no solvent-free border; keep each water whole.
+            boundary = 0.0 if self.periodic else -self.solvcut
+            if sdf_value <= boundary:
                 selected_waters.append(water)
 
         return np.array(selected_waters) if selected_waters else np.empty((0, 3, 3))
@@ -977,13 +1003,22 @@ class Solvator:
         
         # Use the oxygen atom (first atom) of each water for KDTree filtering.
         oxy_coords = np.array([water[0] for water in water_box])
-        kd_tree = KDTree(self.coords)
-        water_kd_tree = KDTree(oxy_coords)
+        solute_coords = self.coords
+        if self.periodic:
+            solute_coords = wrap_periodic(solute_coords, self.box_dims)
+            oxy_coords = wrap_periodic(oxy_coords, self.box_dims)
+        boxsize = self.box_dims if self.periodic else None
+        kd_tree = KDTree(solute_coords, boxsize=boxsize)
+        water_kd_tree = KDTree(oxy_coords, boxsize=boxsize)
         r = water_kd_tree.query_ball_tree(kd_tree, self.solvcut)
         cutoff_select = []
         for nei_list in r:
             cutoff_select.append(not bool(len(nei_list)))
         cutoff_select = np.array(cutoff_select)
+        if self.periodic:
+            for first, second in sorted(water_kd_tree.query_pairs(PERIODIC_WATER_OO_CUTOFF)):
+                if cutoff_select[first] and cutoff_select[second]:
+                    cutoff_select[second] = False
         water_box = water_box[cutoff_select]
         return water_box
 
@@ -1034,6 +1069,7 @@ class Solvator:
         if not hasattr(self.model, '_solvation_info'):
             self.model._solvation_info = {}
         self.model._solvation_info['box_type'] = self.box_type
+        self.model._solvation_info['periodic'] = self.periodic
         self.model._solvation_info['box_dim'] = self.box_dim
         # Store box_dims for orthorhombic and related types
         if hasattr(self, 'box_dims') and self.box_dims is not None:
@@ -1060,6 +1096,11 @@ class Solvator:
                 and getattr(chain, "source", None) == "generated"
             ):
                 remove_list.append(chain.id)
+        for chain_id in remove_list:
+            self.model.detach_child(chain_id)
+        if remove_list and hasattr(self.model, '_solvation_info'):
+            for key in ('concentration', 'n_cation', 'n_anion', 'cation', 'anion', 'method'):
+                self.model._solvation_info.pop(key, None)
             
     def add_balancing_ions(
             self, present_charge = None, cation='SOD', anion='CLA', skip_undefined=True,
@@ -1537,7 +1578,9 @@ class Solvator:
         ion_list: list,
         min_dist_solute: float = 5.0,
         min_dist_ion: float = 5.0,
-        max_attempts: int = 1000
+        max_attempts: int = 1000,
+        rng = None,
+        eligible_waters = None,
     ) -> list:
         """Place ions using Monte-Carlo with distance constraints.
 
@@ -1553,6 +1596,8 @@ class Solvator:
             Minimum distance between placed ions in Å.
         max_attempts : int
             Maximum attempts to place each ion before giving up.
+        rng : numpy.random.Generator, optional
+            Use this generator instead of the process-global random state.
 
         Returns
         -------
@@ -1562,8 +1607,11 @@ class Solvator:
         # Get all water residues and their oxygen coordinates
         water_residues = []
         water_coords = []
+        allowed_ids = None if eligible_waters is None else {id(water) for water in eligible_waters}
         for chain in solvents:
             for res in chain.get_residues():
+                if allowed_ids is not None and id(res) not in allowed_ids:
+                    continue
                 if 'OH2' in res:
                     water_residues.append(res)
                     water_coords.append(res['OH2'].coord)
@@ -1585,12 +1633,18 @@ class Solvator:
 
         if len(solute_coords) > 0:
             solute_coords = np.array(solute_coords)
-            solute_tree = KDTree(solute_coords)
+            if self.periodic:
+                solute_coords = wrap_periodic(solute_coords, self.box_dims)
+            solute_tree = KDTree(solute_coords, boxsize=self.box_dims if self.periodic else None)
         else:
             solute_tree = None
 
         # Track placed ion positions and used water indices
-        placed_ion_coords = []
+        placed_ion_coords = [
+            atom.coord for chain in self.model
+            if getattr(chain, 'chain_type', None) == 'Ion'
+            for atom in chain.get_atoms()
+        ]
         used_water_indices = set()
         placements = []
 
@@ -1603,7 +1657,10 @@ class Solvator:
                 i for i in range(len(water_residues))
                 if i not in used_water_indices
             ]
-            random.shuffle(available_indices)
+            if rng is None:
+                random.shuffle(available_indices)
+            else:
+                rng.shuffle(available_indices)
 
             for idx in available_indices:
                 if attempts >= max_attempts:
@@ -1614,14 +1671,18 @@ class Solvator:
 
                 # Check distance from solute
                 if solute_tree is not None:
-                    dist_to_solute = solute_tree.query(coord)[0]
+                    query_coord = wrap_periodic(coord, self.box_dims) if self.periodic else coord
+                    dist_to_solute = solute_tree.query(query_coord)[0]
                     if dist_to_solute < min_dist_solute:
                         continue
 
                 # Check distance from other placed ions
                 if len(placed_ion_coords) > 0:
                     ion_coords_array = np.array(placed_ion_coords)
-                    dists = np.linalg.norm(ion_coords_array - coord, axis=1)
+                    delta = ion_coords_array - coord
+                    if self.periodic:
+                        delta -= np.array(self.box_dims) * np.rint(delta / self.box_dims)
+                    dists = np.linalg.norm(delta, axis=1)
                     if np.min(dists) < min_dist_ion:
                         continue
 
@@ -1641,6 +1702,59 @@ class Solvator:
 
         return placements
 
+    def _apply_ion_placements(self, placements, solvents, chain_id, segid, source, description):
+        new_ion_chain = Ion(chain_id)
+        new_ion_chain.source = source
+        new_ion_chain.pdbx_description = description
+        for i, (water_res, ion_name) in enumerate(placements, start=1):
+            oxygen = water_res['OH2'] if 'OH2' in water_res else water_res['O']
+            ion_res = _topo_def.res_defs[ion_name].create_residue(resseq=i)
+            ion_res.atoms[0].coord = oxygen.coord.copy()
+            ion_res.segid = segid
+            new_ion_chain.add(ion_res)
+            water_res.parent.detach_child(water_res.id)
+        for water_chain in solvents:
+            if len(water_chain) == 0:
+                self.model.detach_child(water_chain.id)
+            elif self._topo_loader is not None:
+                self._topo_loader.generate_solvent(water_chain, 'TIP3', QUIET=True)
+        self.model.add(new_ion_chain)
+        if self._topo_loader is not None:
+            self._topo_loader.generate(new_ion_chain)
+        return new_ion_chain
+
+    def add_ions_by_count(self, counts, *, eligible_waters=None, min_dist_solute=3.0,
+                          min_dist_ion=3.0, rng=None):
+        """Replace waters with exact fixed counterion counts, including divalent ions.
+
+        Fixed counterions survive a later monovalent add_ions() call. This does
+        not calculate salt concentration or imply counterion equilibration.
+        """
+        ion_list = []
+        for name, count in counts.items():
+            definition = _topo_def.res_defs.get(name)
+            if definition is None or len(definition) != 1 or name not in ION_VALENCES:
+                raise ValueError(f'Ion {name} needs a defined single-atom topology and valence.')
+            if not np.isfinite(count) or count < 0 or int(count) != count:
+                raise ValueError('Fixed ion counts must be finite nonnegative integers.')
+            ion_list.extend([name] * int(count))
+        if not ion_list:
+            return None
+        if 'MCAL' in self.model:
+            raise ValueError('Fixed counterions already exist. Do not add them twice.')
+        solvents = [chain for chain in self.model if getattr(chain, 'chain_type', None) == 'Solvent']
+        placements = self._place_ions_monte_carlo(
+            solvents, ion_list, min_dist_solute, min_dist_ion, rng=rng,
+            eligible_waters=eligible_waters)
+        if len(placements) != len(ion_list):
+            raise ValueError(f'Could not place all fixed counterions ({len(placements)} of {len(ion_list)}).')
+        chain = self._apply_ion_placements(placements, solvents, 'MCAL', 'MCAL',
+                                         'membrane_counterions', 'fixed membrane counterions')
+        if not hasattr(self.model, '_solvation_info'):
+            self.model._solvation_info = {}
+        self.model._solvation_info['fixed_ion_counts'] = dict(counts)
+        return chain
+
     def add_ions(
         self,
         concentration: float = 0.15,
@@ -1651,6 +1765,7 @@ class Solvator:
         min_dist_ion: float = 5.0,
         skip_undefined: bool = True,
         remove_generated_ions: bool = True,
+        rng = None,
     ) -> Optional[Ion]:
         """Add ions to achieve target salt concentration.
 
@@ -1681,6 +1796,8 @@ class Solvator:
             If True, assume zero charge for chains without topology. Default True.
         remove_generated_ions : bool
             If True, any previously generated ion chains will be removed. Default True.
+        rng : numpy.random.Generator, optional
+            Use this generator for reproducible ion positions.
 
         Returns
         -------
@@ -1692,6 +1809,13 @@ class Solvator:
         - Schmit et al. (2018) J. Chem. Theory Comput. 14:1823-1827 (SLTCAP)
         - Machado & Pantano (2020) J. Chem. Theory Comput. 16:1367-1372 (SPLIT)
         """
+        if not np.isfinite(concentration) or concentration < 0:
+            raise ValueError('Ion concentration must be finite and nonnegative.')
+        for ion_name, valence in ((cation, 1), (anion, -1)):
+            definition = _topo_def.res_defs.get(ion_name)
+            if definition is None or len(definition) != 1 or ION_VALENCES.get(ion_name) != valence:
+                raise ValueError(f'Ion {ion_name} must have a defined monovalent single-atom topology.')
+
         # Remove previously generated ions
         if remove_generated_ions:
             self._remove_generated_ions()
@@ -1708,6 +1832,8 @@ class Solvator:
 
         # Calculate system properties
         charge = self._calculate_system_charge(skip_undefined)
+        if abs(charge - round(charge)) > 1e-2:
+            raise ValueError(f'Cannot neutralize noninteger system charge {charge}.')
         n_water = self._count_waters()
 
         # Select method if auto
@@ -1741,6 +1867,12 @@ class Solvator:
         ion_list = [cation] * n_cation + [anion] * n_anion
 
         if len(ion_list) == 0:
+            if not hasattr(self.model, '_solvation_info'):
+                self.model._solvation_info = {}
+            self.model._solvation_info.update(
+                concentration=concentration, n_cation=0, n_anion=0,
+                cation=cation, anion=anion, method=method,
+            )
             print("No ions needed for this system.")
             return None
 
@@ -1763,42 +1895,24 @@ class Solvator:
 
         # Place ions using Monte-Carlo
         placements = self._place_ions_monte_carlo(
-            solvents, ion_list, min_dist_solute, min_dist_ion
+            solvents, ion_list, min_dist_solute, min_dist_ion, rng=rng
         )
 
-        if len(placements) == 0:
-            warnings.warn("No ions could be placed!", UserWarning)
-            return None
+        if len(placements) != len(ion_list):
+            raise ValueError(
+                f'Could not place all requested ions ({len(placements)} of {len(ion_list)}). '
+                'Increase box size or reduce the distance limits.'
+            )
+        n_cation = sum(ion_name == cation for _, ion_name in placements)
+        n_anion = sum(ion_name == anion for _, ion_name in placements)
 
-        # Create ion chain
-        new_ion_chain = Ion('IA')
-        new_ion_chain.source = 'generated'
-        segid = 'IONS'
         ion_names_str = ', '.join(sorted(set(ion_list)))
-        new_ion_chain.pdbx_description = f"ions ({ion_names_str}) at {concentration*1000:.0f} mM"
-
-        for i, (water_res, ion_name) in enumerate(placements, start=1):
-            if 'OH2' in water_res:
-                oxy_coord = water_res['OH2'].coord
-            else:
-                oxy_coord = water_res['O'].coord
-
-            ion_res = _topo_def.res_defs[ion_name].create_residue(resseq=i)
-            ion_res.atoms[0].coord = oxy_coord
-            ion_res.segid = segid
-            new_ion_chain.add(ion_res)
-
-            # Remove water
-            if (water_chain := water_res.parent) is not None:
-                water_chain.detach_child(water_res.id)
-
-        self.model.add(new_ion_chain)
-        if self._topo_loader is not None:
-            self._topo_loader.generate(new_ion_chain)
+        new_ion_chain = self._apply_ion_placements(
+            placements, solvents, 'IA', 'IONS', 'generated',
+            f"ions ({ion_names_str}) at {concentration*1000:.0f} mM")
 
         # Report final charge
-        ion_charge = n_cation - n_anion
-        final_charge = charge + ion_charge
+        final_charge = self._calculate_system_charge(skip_undefined)
         print(f"\n  Final system charge: {final_charge:+.0f} e")
         if abs(final_charge) > 0.5:
             warnings.warn(
@@ -1818,8 +1932,5 @@ class Solvator:
         self.model._solvation_info['method'] = method
 
         return new_ion_chain
-
-
-
 
 

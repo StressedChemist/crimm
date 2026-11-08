@@ -256,7 +256,7 @@ def _generate_system_info(entity) -> list:
             if chain_type == "Solvent":
                 n_waters = len(list(chain.get_residues()))
             elif chain_type == "Ion":
-                n_ions = len(list(chain.get_residues()))
+                n_ions += len(list(chain.get_residues()))
 
     # Check for solvation metadata (salt concentration, preserved waters)
     solvation_info = []
