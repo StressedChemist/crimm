@@ -4,3 +4,23 @@ include crimm/Data/toppar/*.str
 include crimm/Data/toppar/*.inp
 include crimm/Data/propka.cfg
 include crimm/Data/water_coords.npy
+include crimm/Data/lipid_conformers.npz
+include crimm/Data/oprlm_lipids.npz
+include crimm/Data/oprlm_lipids.json
+include crimm/charmm_gui_9qsy/checkfft.py
+exclude crimm/Data/lipid_lib.tar.gz
+prune crimm/Data/lipid_lib
+recursive-include crimm/Modeller/_ppm3 *.f *.f90 res.lib NOTICE.md LICENSE
+exclude crimm/Modeller/_ppm2/*
+include tests/data/ppm3_reference.tar.gz
+include tests/data/ppm3_reference.md
+include tests/data/ppm2_reference.tar.gz
+include tests/data/ppm2_reference.md
+include scripts/membrane_pycharmm.py
+include scripts/membrane_matrix.py
+include scripts/pack_lipid_library.py
+include scripts/import_oprlm_reference.py
+include scripts/compile_oprlm_library.py
+include docs/membrane_charmm_testing.md
+include docs/membrane_ppm3.md
+include docs/membrane_presets.md

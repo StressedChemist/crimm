@@ -77,6 +77,7 @@ STATUS_SKIP    = "skip"
 STATUS_TIMEOUT = "timeout"
 STATUS_PARTIAL = "partial"   # loop_build: some gaps repaired but not all
 STATUS_CRASH   = "crash"     # subprocess killed by signal (hard crash)
+STATUS_RUNNING = "running"  # checkpoint only, replaced before CSV output
 
 RCSB_SEARCH_URL  = "https://search.rcsb.org/rcsbsearch/v1/query"
 RCSB_HOLDINGS_URL = "https://data.rcsb.org/rest/v1/holdings/current/entry_ids"
@@ -225,7 +226,8 @@ def _run_stages(pdb_id: str, cgenff_path: Optional[str], run_charmm: bool,
     from crimm.Modeller import TopologyGenerator
     from crimm.Modeller.LoopBuilder import ChainLoopBuilder
 
-    res = Result(pdb_id=pdb_id, timestamp=datetime.now(timezone.utc).isoformat())
+    res = Result(pdb_id=pdb_id, fetch=STATUS_RUNNING,
+                 timestamp=datetime.now(timezone.utc).isoformat())
     t0 = time.perf_counter()
 
     def _checkpoint():
@@ -236,9 +238,7 @@ def _run_stages(pdb_id: str, cgenff_path: Optional[str], run_charmm: bool,
             json.dump(res.as_dict(), f)
         os.replace(tmp, result_path)
 
-    # Create a fresh TopologyGenerator in this process.
-    # RTF/PRM files are cached inside this object for the duration of the call.
-    topo_gen = TopologyGenerator(cgenff_excutable_path=cgenff_path)
+    _checkpoint()
 
     # ── Stage 1: fetch ────────────────────────────────────────────────────────
     raw_model = None
@@ -258,6 +258,8 @@ def _run_stages(pdb_id: str, cgenff_path: Optional[str], run_charmm: bool,
     _checkpoint()
 
     # ── Stage 2: organize ─────────────────────────────────────────────────────
+    res.organize = STATUS_RUNNING
+    _checkpoint()
     model = None
     try:
         model = OrganizedModel(raw_model)
@@ -283,6 +285,8 @@ def _run_stages(pdb_id: str, cgenff_path: Optional[str], run_charmm: bool,
     if not model.protein:
         res.loop_build = STATUS_SKIP
     else:
+        res.loop_build = STATUS_RUNNING
+        _checkpoint()
         for chain in model.protein:
             if chain.is_continuous():
                 continue
@@ -313,7 +317,10 @@ def _run_stages(pdb_id: str, cgenff_path: Optional[str], run_charmm: bool,
     _checkpoint()
 
     # ── Stage 4: topo_gen ─────────────────────────────────────────────────────
+    res.topo_gen = STATUS_RUNNING
+    _checkpoint()
     try:
+        topo_gen = TopologyGenerator(cgenff_excutable_path=cgenff_path)
         topo_gen.generate_model(model, coerce=True, QUIET=True)
         res.topo_gen = STATUS_OK
     except Exception as exc:
@@ -327,6 +334,8 @@ def _run_stages(pdb_id: str, cgenff_path: Optional[str], run_charmm: bool,
     # A checkpoint is written BEFORE this stage so that if pyCHARMM kills the
     # process mid-load, the parent can see stages 1–4 already succeeded.
     if run_charmm:
+        res.charmm_load = STATUS_RUNNING
+        _checkpoint()
         try:
             from crimm.Adaptors.pyCHARMMAdaptors import load_model, empty_charmm
             empty_charmm()
@@ -342,6 +351,19 @@ def _run_stages(pdb_id: str, cgenff_path: Optional[str], run_charmm: bool,
         _checkpoint()
 
 
+def _annotate_subprocess_failure(
+    result: Result,
+    status: str,
+    label: str,
+):
+    for stage in STAGES:
+        if getattr(result, stage) != STATUS_RUNNING:
+            continue
+        setattr(result, stage, status)
+        setattr(result, f"{stage}_err", label)
+        break
+
+
 def _dispatch_worker(
     pdb_id: str,
     cgenff_path: Optional[str],
@@ -354,13 +376,13 @@ def _dispatch_worker(
     Uses the 'spawn' start method so the child has a completely clean Python
     environment (no inherited state from the parent, no pyCHARMM globals).
 
-    The worker writes JSON checkpoints after each stage.  If it is killed or
-    times out, whatever was last checkpointed is read back and the first
-    unfinished stage is annotated with STATUS_CRASH or STATUS_TIMEOUT.
+    The worker writes checkpoints before and after each stage.
+    After a crash or timeout, the parent marks the active stage.
     """
     # Write an empty placeholder so the file always exists before the worker runs.
     placeholder = Result(
-        pdb_id=pdb_id, timestamp=datetime.now(timezone.utc).isoformat()
+        pdb_id=pdb_id, fetch=STATUS_RUNNING,
+        timestamp=datetime.now(timezone.utc).isoformat()
     )
     with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as f:
         result_path = f.name
@@ -400,19 +422,16 @@ def _dispatch_worker(
         except OSError:
             pass
 
-    # Annotate the first stage that didn't complete with the failure reason.
-    if timed_out or (exitcode != 0 and exitcode is not None):
+    # Annotate the running stage with the failure reason.
+    unfinished = any(getattr(result, stage) == STATUS_RUNNING for stage in STAGES)
+    if timed_out or (exitcode != 0 and exitcode is not None) or unfinished:
         status = STATUS_TIMEOUT if timed_out else STATUS_CRASH
         label = (
             f"Process timed out after {timeout}s"
             if timed_out
-            else f"Process killed by signal (exit code {exitcode})"
+            else f"Process exited before stage completion (exit code {exitcode})"
         )
-        for stage in STAGES:
-            if getattr(result, stage) == STATUS_SKIP:
-                setattr(result, stage, status)
-                setattr(result, f"{stage}_err", label)
-                break
+        _annotate_subprocess_failure(result, status, label)
 
     return result
 
