@@ -11,7 +11,7 @@ authors = [
 ]
 description = "Chemistry with the ReInvented Macromolecular Mechanics"
 readme = "README.md"
-license = {text = "CRIMM: GPL-3.0-or-later; PPM3: redistribution terms pending"}
+license = {text = "CRIMM: GPL-3.0-or-later; PPM3: GNU GPL version 3"}
 requires-python = ">=3.9"
 dependencies = [
     "numpy>=1.24",
@@ -66,3 +66,4 @@ namespaces = false
 
 [tool.setuptools.package-data]
 crimm = ["charmm_gui_9qsy/pentest.py", "charmm_gui_9qsy/checkfft.py"]
+"crimm.Modeller._ppm3" = ["res.lib", "NOTICE.md", "LICENSE"]

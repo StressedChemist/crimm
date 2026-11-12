@@ -2,9 +2,10 @@
 
 CRIMM uses PPM code obtained from Andrei Lomize and Irina Pogozheva, the main authors.
 The native revision is `5784f088032e5b9fb35147815f67500b8cc94855`.
-There is no Python scorer or fallback. Keep sources, reference fixtures, and local
-packages unpublished until PPM3 distribution terms are recorded. See the
-[component notice](../crimm/Modeller/_ppm3/NOTICE.md).
+There is no Python scorer or fallback. PPM3 is distributed under GNU GPL
+version 3, the same terms as PPM2, as confirmed by the CRIMM maintainer on
+2026-11-12. See the [component notice](../crimm/Modeller/_ppm3/NOTICE.md)
+and [license](../crimm/Modeller/_ppm3/LICENSE).
 
 ## Protein positioning
 

@@ -5,10 +5,18 @@ CRIMM uses PPM code obtained from Andrei Lomize and Irina Pogozheva, the main au
 Source: https://cggit.cc.lehigh.edu/biomembhub/ppm3_server_code.git
 Revision: `5784f088032e5b9fb35147815f67500b8cc94855`.
 
-The upstream tree has no license grant. The PPM2 GPL notice does not establish
-PPM3 distribution terms. Keep this integration, reference archive, and local
-packages unpublished until the PPM3 terms are recorded. CRIMM's own code retains
-its existing license.
+## License
+
+PPM3 is distributed under the GNU General Public License, version 3, on the
+same terms as PPM2. On 2026-11-12, the CRIMM maintainer reported confirmation
+from the PPM3 authors that these terms apply to this integration, including
+the modified native source, compiled library, supporting files, and original
+source reference archive. This notice records that maintainer confirmation.
+
+A copy of the license is included in [LICENSE](LICENSE). Preserve attribution
+and modification notices, and provide corresponding source when distributing
+compiled versions as required by the GPL. CRIMM's own code retains its
+GPL-3.0-or-later license.
 
 ## Scope and source changes
 

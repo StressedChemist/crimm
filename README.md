@@ -115,9 +115,10 @@ python setup.py build_ext --inplace
 
 Source builds require `gfortran`.
 Compiled wheels contain the native library and residue data.
-Keep PPM3 sources, reference fixtures, and local packages unpublished until
-distribution terms are recorded. CRIMM uses PPM code obtained from Andrei Lomize
-and Irina Pogozheva, the main authors. See the [component notice](crimm/Modeller/_ppm3/NOTICE.md).
+PPM3 is distributed under GNU GPL version 3, the same terms as PPM2, as
+confirmed by the CRIMM maintainer. CRIMM uses PPM code obtained from Andrei
+Lomize and Irina Pogozheva, the main authors. See the
+[component notice](crimm/Modeller/_ppm3/NOTICE.md).
 Binary installs require a compatible Fortran runtime.
 The tested Linux build uses `libgfortran.so.5`.
 An absent library produces an error without a Python fallback.
@@ -217,7 +218,8 @@ See `tutorials/` for Jupyter notebooks on structure preparation, topology genera
 
 ## License
 
-GPLv3
+CRIMM: GPL-3.0-or-later. Bundled PPM3: GNU GPL version 3. See the
+[PPM3 component notice](crimm/Modeller/_ppm3/NOTICE.md).
 
 ## Links
 

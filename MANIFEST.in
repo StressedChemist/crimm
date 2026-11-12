@@ -10,7 +10,7 @@ include crimm/Data/oprlm_lipids.json
 include crimm/charmm_gui_9qsy/checkfft.py
 exclude crimm/Data/lipid_lib.tar.gz
 prune crimm/Data/lipid_lib
-recursive-include crimm/Modeller/_ppm3 *.f *.f90 res.lib NOTICE.md
+recursive-include crimm/Modeller/_ppm3 *.f *.f90 res.lib NOTICE.md LICENSE
 exclude crimm/Modeller/_ppm2/*
 include tests/data/ppm3_reference.tar.gz
 include tests/data/ppm3_reference.md

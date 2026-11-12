@@ -5,9 +5,12 @@ Revision: `5784f088032e5b9fb35147815f67500b8cc94855`.
 Archive SHA256: `ca599b95e7ec977abe9bee778cd6444daf2d89dbffd6ed537e4da9d0d3f22f46`.
 
 The archive contains original source bytes from `git archive`, not CRIMM's array
-driver or patched routines. It remains unpublished until PPM3 distribution terms
-are recorded. The source tree has no license grant. The offline PDB fixtures come
-from the separately documented [PPM2 archive](ppm2_reference.md).
+driver or patched routines. The PPM3 authors' approval to use the same GNU GPL
+version 3 terms as PPM2 was confirmed by the CRIMM maintainer on 2026-11-12.
+See the [component notice](../../crimm/Modeller/_ppm3/NOTICE.md) and
+[license](../../crimm/Modeller/_ppm3/LICENSE). The archive bytes and checksum
+above are unchanged. The offline PDB fixtures come from the separately
+documented [PPM2 archive](ppm2_reference.md).
 
 The tests compile the original main program separately. Reference corrections
 replace undefined `nres` with `nca` in CA windows, initialize `ichange`, initialize
